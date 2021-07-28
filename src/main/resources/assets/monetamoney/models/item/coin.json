@@ -1,0 +1,26 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "monetamoney:item/coin/coin_phase0"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "damage": 0
+      },
+      "model": "monetamoney:item/coin_2"
+    },
+    {
+      "predicate": {
+        "damage": 0.33
+      },
+      "model": "monetamoney:item/coin_1"
+    },
+    {
+      "predicate": {
+        "damage": 0.67
+      },
+      "model": "monetamoney:item/coin_0"
+    }
+  ]
+}

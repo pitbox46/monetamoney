@@ -1,0 +1,27 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "monetamoney:block/vault",
+      "x": 90
+    },
+    "facing=up": {
+      "model": "monetamoney:block/vault",
+      "x": -90
+    },
+    "facing=north": {
+      "model": "monetamoney:block/vault"
+    },
+    "facing=south": {
+      "model": "monetamoney:block/vault",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "monetamoney:block/vault",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "monetamoney:block/vault",
+      "y": 90
+    }
+  }
+}

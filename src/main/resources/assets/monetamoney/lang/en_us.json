@@ -1,0 +1,45 @@
+{
+  "itemGroup.monetamoney": "Moneta Money",
+  "item.monetamoney.coin": "%sCoins",
+  "message.monetamoney.newplayer": "Welcome to this server! You have an initial balance of %s coins",
+  "message.monetamoney.login_reward": "For logging in, you get a bonus of %s coins!",
+
+  "message.monetamoney.error": "Some error occurred",
+  "message.monetamoney.invalidsize": "Cannot withdraw that amount of coins",
+  "message.monetamoney.nomoney": "Not enough balance",
+  "message.monetamoney.invalidcoin": "Cannot redeem coin",
+  "message.monetamoney.invaliditem": "This item is invalid",
+  "message.monetamoney.listingerror": "Error occurred in the listing",
+  "message.monetamoney.notowner": "You do not own this item",
+  "message.monetamoney.noteam": "No team found",
+  "message.monetamoney.noaccess": "No access",
+
+  "info.monetamoney.owner": "Owner: %s",
+  "info.monetamoney.price": "Price: %s Coins",
+  "info.monetamoney.personalbal": "Personal: %s Coins",
+  "info.monetamoney.teambal": "Team: %s Coins",
+
+
+  "button.monetamoney.balance": "Balance",
+  "button.monetamoney.teams": "Teams",
+  "button.monetamoney.acctransactions": "Account Transactions",
+  "button.monetamoney.chunks": "Chunks",
+  "button.monetamoney.auction": "Auction",
+  "button.monetamoney.withdraw": "Withdraw",
+  "button.monetamoney.deposit": "Deposit",
+  "button.monetamoney.buy": "Buy",
+  "button.monetamoney.remove": "Remove",
+  "button.monetamoney.listitem": "List Item",
+  "button.monetamoney.editlistings": "Edit Listings",
+  "button.monetamoney.alllistings": "All Listings",
+  "button.monetamoney.isteams": "Teams Mode",
+  "button.monetamoney.disable": "Disable",
+  "button.monetamoney.enable": "Enable",
+
+  "button.monetamoney.leave": "Leave Team",
+  "button.monetamoney.join": "Join Team",
+  "button.monetamoney.locked": "Team Locked",
+  "button.monetamoney.switchteam": "Switch Team",
+  "button.monetamoney.createteam": "Create Team",
+  "button.monetamoney.dismantle": "Dismantle Team"
+}

@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "#G#",
+    "#E#",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:iron_block"
+    },
+    "G": {
+      "item": "minecraft:gold_block"
+    },
+    "E": {
+      "item": "minecraft:ender_chest"
+    }
+  },
+  "result": {
+    "item": "monetamoney:vault",
+    "count": 1
+  }
+}
