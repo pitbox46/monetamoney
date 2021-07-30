@@ -4,14 +4,15 @@
   "block.monetamoney.vault": "Vault",
   "block.monetamoney.anchor": "Anchor",
 
-  "item.monetamoney.coin": "%sCoins",
-  "message.monetamoney.newplayer": "Welcome to this server! You have an initial balance of %s coins",
-  "message.monetamoney.login_reward": "For logging in, you get a bonus of %s coins!",
+  "item.monetamoney.coin": "%sMoneta",
+  "message.monetamoney.newplayer": "Welcome to this server! You have an initial balance of %s Moneta",
+  "message.monetamoney.login_reward": "For logging in, you get a bonus of %s Moneta!",
 
   "message.monetamoney.error": "Some error occurred",
   "message.monetamoney.invalidsize": "Cannot withdraw that amount of coins",
   "message.monetamoney.nomoney": "Not enough balance",
-  "message.monetamoney.invalidcoin": "Cannot redeem coin",
+  "message.monetamoney.invalidcoin": "The coin is not valid",
+  "message.monetamoney.validcoin": "The coin is valid",
   "message.monetamoney.invaliditem": "This item is invalid",
   "message.monetamoney.listingerror": "Error occurred in the listing",
   "message.monetamoney.notowner": "You do not own this item",
@@ -19,9 +20,12 @@
   "message.monetamoney.noaccess": "No access",
 
   "info.monetamoney.owner": "Owner: %s",
-  "info.monetamoney.price": "Price: %s Coins",
-  "info.monetamoney.personalbal": "Personal: %s Coins",
-  "info.monetamoney.teambal": "Team: %s Coins",
+  "info.monetamoney.price": "Price: %s Moneta",
+  "info.monetamoney.personalbal": "Personal: %s Moneta",
+  "info.monetamoney.teambal": "Team: %s Moneta",
+  "info.monetamoney.fees": "Fees",
+  "info.monetamoney.listfee": "List: %s Moneta",
+  "info.monetamoney.dailylistfee": "Daily: %s Moneta",
 
 
   "button.monetamoney.balance": "Balance",

@@ -72,7 +72,15 @@ public class AuctionListItemPage extends ContainerScreen<AuctionListItemContaine
         this.blit(matrixStack, this.getBackgroundXStart() + 63, this.getBackgroundYStart() + 50, 100, 217, 99, 29, 256, 263);
         /* Balance String */
         drawString(matrixStack, this.font, new TranslationTextComponent("info.monetamoney.personalbal", ClientProxy.personalBalance), this.getBackgroundXStart() + 5, this.getBackgroundYStart() + 5, ColorHelper.PackedColor.packColor(255, 255, 255, 255));
-        drawCenteredString(matrixStack, this.font, new TranslationTextComponent("info.monetamoney.listfee", Config.LIST_FEE.get()), this.width / 2, this.getBackgroundYStart() + 50, ColorHelper.PackedColor.packColor(255, 255, 255, 255));
+
+        TranslationTextComponent fees = new TranslationTextComponent("info.monetamoney.fees");
+        drawString(matrixStack, this.font, fees, this.getBackgroundXStart() + 5, this.getBackgroundYStart() + 18, ColorHelper.PackedColor.packColor(255, 255, 255, 255));
+
+        TranslationTextComponent listFee = new TranslationTextComponent("info.monetamoney.listfee", ClientProxy.fee);
+        drawString(matrixStack, this.font, listFee, this.getBackgroundXStart() + 5, this.getBackgroundYStart() + 28, ColorHelper.PackedColor.packColor(255, 255, 255, 255));
+
+        TranslationTextComponent dailyFee = new TranslationTextComponent("info.monetamoney.dailylistfee", ClientProxy.dailyFee);
+        drawString(matrixStack, this.font, dailyFee, this.getBackgroundXStart() + 5, this.getBackgroundYStart() + 38, ColorHelper.PackedColor.packColor(255, 255, 255, 255));
 
         this.renderStatus(matrixStack);
         this.renderHoveredTooltip(matrixStack, mouseX, mouseY);

@@ -35,7 +35,7 @@ public class Outstanding {
         jsonFile = file;
     }
 
-    public static UUID newCoin(File jsonFile, long amount) {
+    public static UUID newCoin(File jsonFile, long amount, String creator) {
         try (Reader reader = new FileReader(jsonFile)) {
             JsonObject jsonObject = JSONUtils.fromJson(GSON, reader, JsonObject.class);
             assert jsonObject != null;
@@ -45,6 +45,7 @@ public class Outstanding {
             JsonObject coinEntry = new JsonObject();
             coinEntry.addProperty("amount", amount);
             coinEntry.addProperty("time", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+            coinEntry.addProperty("creator", creator);
 
             jsonObject.add(uuid.toString(), coinEntry);
             FileWriter writer = new FileWriter(jsonFile);

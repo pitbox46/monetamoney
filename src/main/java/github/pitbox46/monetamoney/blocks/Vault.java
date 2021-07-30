@@ -76,7 +76,7 @@ public class Vault extends Block implements IOnBreak {
             if(!team.isNull()) {
                 while (team.balance > 0) {
                     int amount = team.balance <= Coin.MAX_SIZE ? (int) team.balance : Coin.MAX_SIZE;
-                    ItemStack stack = Coin.createCoin(amount, Outstanding.newCoin(Outstanding.jsonFile, amount));
+                    ItemStack stack = Coin.createCoin(amount, Outstanding.newCoin(Outstanding.jsonFile, amount, "team_vault_broke"));
                     team.balance -= amount;
                     world.addEntity(new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), stack));
                 }

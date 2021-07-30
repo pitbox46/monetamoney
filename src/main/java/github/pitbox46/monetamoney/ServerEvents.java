@@ -10,6 +10,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -34,12 +36,13 @@ import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.nio.file.Path;
+import java.sql.Time;
 import java.util.*;
 import java.util.function.Supplier;
 
 public class ServerEvents {
     public static final Map<String, List<ChunkLoader>> CHUNK_MAP = new HashMap<>();
-    private boolean ticked;
+    private int day;
 
     @SubscribeEvent
     public void onServerStarting(FMLServerStartingEvent event) {
@@ -126,18 +129,25 @@ public class ServerEvents {
 
     @SubscribeEvent
     public void onTick(TickEvent.WorldTickEvent event) {
-        if(event.phase == TickEvent.Phase.END && event.side == LogicalSide.SERVER && !this.ticked) {
-            //TODO change this time
-            if(event.world.getGameTime() % 1728000 == 68) {
-                loadAndPayChunks(event.world);
-            }
-            this.ticked = true;
-        } else if(event.phase == TickEvent.Phase.START && event.side == LogicalSide.SERVER) {
-            this.ticked = false;
+        if(event.phase == TickEvent.Phase.END && event.side == LogicalSide.SERVER && Calendar.getInstance().get(Calendar.DAY_OF_YEAR) != day) {
+            day = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
+            loadAndPayChunks(event.world);
+            collectAuctionFees();
         }
     }
 
     /* Helper methods */
+    public static void collectAuctionFees() {
+        ListNBT auctionList = (ListNBT) Auctioned.auctionedNBT.get("auction");
+        assert auctionList != null;
+        auctionList.removeIf(inbt -> {
+            CompoundNBT nbt = (CompoundNBT) inbt;
+            boolean flag = Ledger.readBalance(Ledger.jsonFile, nbt.getString("owner")) < Config.DAILY_LIST_FEE.get();
+            if(!flag) Ledger.addBalance(Ledger.jsonFile, nbt.getString("owner"), -Config.DAILY_LIST_FEE.get());
+            return flag;
+        });
+    }
+
     public static void loadNewChunk(World world, Team team, ChunkLoader newChunk) {
         ServerWorld serverWorld = world.getServer().getWorld(RegistryKey.getOrCreateKey(Registry.WORLD_KEY, newChunk.dimensionKey));
         long price = Config.BASE_CHUNKLOADER.get();
