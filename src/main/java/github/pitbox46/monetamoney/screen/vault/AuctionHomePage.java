@@ -96,6 +96,7 @@ public class AuctionHomePage extends ContainerScreen<AuctionHomeContainer> {
         List<ITextComponent> lines = itemStack.getTooltip(this.minecraft.player, this.minecraft.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
         if(itemStack.getTag() != null && itemStack.getTag().getInt("price") != 0) {
             lines.add(1, new StringTextComponent(itemStack.getTag().getInt("price") + " Coins").mergeStyle(TextFormatting.YELLOW));
+            lines.add(2, new StringTextComponent("Owner: " + itemStack.getTag().getString("owner")));
         }
         return lines;
     }
