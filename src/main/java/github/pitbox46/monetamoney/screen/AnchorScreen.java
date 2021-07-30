@@ -2,7 +2,7 @@ package github.pitbox46.monetamoney.screen;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import github.pitbox46.monetamoney.blocks.Anchor;
-import github.pitbox46.monetamoney.network.CAnchorButton;
+import github.pitbox46.monetamoney.network.client.CAnchorButton;
 import github.pitbox46.monetamoney.network.PacketHandler;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.ResourceLocation;

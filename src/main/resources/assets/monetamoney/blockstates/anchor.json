@@ -42,24 +42,24 @@
       "model": "monetamoney:block/anchor_on",
       "y": 90
     },
-    "status=out,facing=down": {
+    "status=stuck,facing=down": {
       "model": "monetamoney:block/anchor_out"
     },
-    "status=out,facing=up": {
+    "status=stuck,facing=up": {
       "model": "monetamoney:block/anchor_out"
     },
-    "status=out,facing=north": {
+    "status=stuck,facing=north": {
       "model": "monetamoney:block/anchor_out"
     },
-    "status=out,facing=south": {
+    "status=stuck,facing=south": {
       "model": "monetamoney:block/anchor_out",
       "y": 180
     },
-    "status=out,facing=west": {
+    "status=stuck,facing=west": {
       "model": "monetamoney:block/anchor_out",
       "y": 270
     },
-    "status=out,facing=east": {
+    "status=stuck,facing=east": {
       "model": "monetamoney:block/anchor_out",
       "y": 90
     }

@@ -5,7 +5,7 @@ import github.pitbox46.monetamoney.data.ChunkLoader;
 import github.pitbox46.monetamoney.data.Team;
 import github.pitbox46.monetamoney.data.Teams;
 import github.pitbox46.monetamoney.network.PacketHandler;
-import github.pitbox46.monetamoney.network.SOpenAnchorPage;
+import github.pitbox46.monetamoney.network.server.SOpenAnchorPage;
 import github.pitbox46.monetamoney.utils.BlockUtils;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -27,7 +27,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
@@ -38,7 +37,6 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static net.minecraft.state.properties.BlockStateProperties.FACING;
 
@@ -48,7 +46,7 @@ public class Anchor extends Block implements IOnBreak {
     public static final VoxelShape SOUTH_SHAPE = createRotatedShape(Direction.SOUTH);
     public static final VoxelShape WEST_SHAPE = createRotatedShape(Direction.WEST);
 
-    private static final EnumProperty<Status> STATUS = EnumProperty.create("status", Status.class);
+    public static final EnumProperty<Status> STATUS = EnumProperty.create("status", Status.class);
 
     public static BlockPos lastOpenedAnchor;
 
@@ -181,7 +179,7 @@ public class Anchor extends Block implements IOnBreak {
     public enum Status implements IStringSerializable {
         OFF("off"),
         ON("on"),
-        OUT("out");
+        STUCK("stuck");
 
         public final String name;
         Status(String name) {

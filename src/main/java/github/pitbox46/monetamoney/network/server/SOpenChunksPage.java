@@ -1,4 +1,4 @@
-package github.pitbox46.monetamoney.network;
+package github.pitbox46.monetamoney.network.server;
 
 import github.pitbox46.monetamoney.data.ChunkLoader;
 import github.pitbox46.monetamoney.data.Team;

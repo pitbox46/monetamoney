@@ -1,5 +1,9 @@
 {
   "itemGroup.monetamoney": "Moneta Money",
+
+  "block.monetamoney.vault": "Vault",
+  "block.monetamoney.anchor": "Anchor",
+
   "item.monetamoney.coin": "%sCoins",
   "message.monetamoney.newplayer": "Welcome to this server! You have an initial balance of %s coins",
   "message.monetamoney.login_reward": "For logging in, you get a bonus of %s coins!",
@@ -24,7 +28,7 @@
   "button.monetamoney.teams": "Teams",
   "button.monetamoney.acctransactions": "Account Transactions",
   "button.monetamoney.chunks": "Chunks",
-  "button.monetamoney.auction": "Auction",
+  "button.monetamoney.auction": "Auction House",
   "button.monetamoney.withdraw": "Withdraw",
   "button.monetamoney.deposit": "Deposit",
   "button.monetamoney.buy": "Buy",

@@ -2,10 +2,11 @@ package github.pitbox46.monetamoney.screen.vault;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import github.pitbox46.monetamoney.Config;
 import github.pitbox46.monetamoney.blocks.Vault;
 import github.pitbox46.monetamoney.containers.vault.AuctionListItemContainer;
-import github.pitbox46.monetamoney.network.CTransactionButton;
-import github.pitbox46.monetamoney.network.CUpdateBalance;
+import github.pitbox46.monetamoney.network.client.CTransactionButton;
+import github.pitbox46.monetamoney.network.client.CUpdateBalance;
 import github.pitbox46.monetamoney.network.ClientProxy;
 import github.pitbox46.monetamoney.network.PacketHandler;
 import github.pitbox46.monetamoney.screen.IStatusable;
@@ -71,6 +72,8 @@ public class AuctionListItemPage extends ContainerScreen<AuctionListItemContaine
         this.blit(matrixStack, this.getBackgroundXStart() + 63, this.getBackgroundYStart() + 50, 100, 217, 99, 29, 256, 263);
         /* Balance String */
         drawString(matrixStack, this.font, new TranslationTextComponent("info.monetamoney.personalbal", ClientProxy.personalBalance), this.getBackgroundXStart() + 5, this.getBackgroundYStart() + 5, ColorHelper.PackedColor.packColor(255, 255, 255, 255));
+        drawCenteredString(matrixStack, this.font, new TranslationTextComponent("info.monetamoney.listfee", Config.LIST_FEE.get()), this.width / 2, this.getBackgroundYStart() + 50, ColorHelper.PackedColor.packColor(255, 255, 255, 255));
+
         this.renderStatus(matrixStack);
         this.renderHoveredTooltip(matrixStack, mouseX, mouseY);
     }

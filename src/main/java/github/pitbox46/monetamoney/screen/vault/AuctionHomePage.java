@@ -4,6 +4,9 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import github.pitbox46.monetamoney.blocks.Vault;
 import github.pitbox46.monetamoney.containers.vault.AuctionHomeContainer;
 import github.pitbox46.monetamoney.network.*;
+import github.pitbox46.monetamoney.network.client.COpenBuyPage;
+import github.pitbox46.monetamoney.network.client.CPageChange;
+import github.pitbox46.monetamoney.network.client.CUpdateBalance;
 import github.pitbox46.monetamoney.screen.ImageTextButton;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.button.Button;
@@ -21,7 +24,6 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AuctionHomePage extends ContainerScreen<AuctionHomeContainer> {

@@ -7,7 +7,7 @@ import github.pitbox46.monetamoney.data.Team;
 import github.pitbox46.monetamoney.data.Teams;
 import github.pitbox46.monetamoney.items.Coin;
 import github.pitbox46.monetamoney.network.PacketHandler;
-import github.pitbox46.monetamoney.network.SOpenMainPage;
+import github.pitbox46.monetamoney.network.server.SOpenMainPage;
 import github.pitbox46.monetamoney.utils.BlockUtils;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -30,9 +30,7 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.PacketDistributor;
 

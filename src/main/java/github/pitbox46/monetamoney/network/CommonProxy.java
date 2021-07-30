@@ -1,5 +1,6 @@
 package github.pitbox46.monetamoney.network;
 
+import github.pitbox46.monetamoney.Config;
 import github.pitbox46.monetamoney.ServerEvents;
 import github.pitbox46.monetamoney.blocks.VaultTile;
 import github.pitbox46.monetamoney.containers.vault.AccountTransactionContainer;
@@ -8,13 +9,14 @@ import github.pitbox46.monetamoney.containers.vault.AuctionHomeContainer;
 import github.pitbox46.monetamoney.containers.vault.AuctionListItemContainer;
 import github.pitbox46.monetamoney.data.*;
 import github.pitbox46.monetamoney.items.Coin;
+import github.pitbox46.monetamoney.network.client.*;
+import github.pitbox46.monetamoney.network.server.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.MinecraftForge;
@@ -92,6 +94,9 @@ public class CommonProxy {
                     public Container createMenu(int id, PlayerInventory inv, PlayerEntity player) {
                         return new AuctionListItemContainer(id, inv);
                     }
+                }, pb -> {
+                    pb.writeLong(Config.LIST_FEE.get());
+                    pb.writeLong(Config.DAILY_REWARD.get());
                 });
             } break;
         }

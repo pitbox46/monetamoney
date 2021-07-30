@@ -5,7 +5,7 @@ import github.pitbox46.monetamoney.blocks.IOnBreak;
 import github.pitbox46.monetamoney.data.*;
 import github.pitbox46.monetamoney.items.Coin;
 import github.pitbox46.monetamoney.network.PacketHandler;
-import github.pitbox46.monetamoney.network.SDenyUseItem;
+import github.pitbox46.monetamoney.network.server.SDenyUseItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.BlockItem;
@@ -119,7 +119,7 @@ public class ServerEvents {
 
     @SubscribeEvent
     public void onAdvancement(AdvancementEvent event) {
-        if(event.getPlayer() != null && !event.getAdvancement().getParent().getId().equals(new ResourceLocation("minecraft:recipes/root"))) {
+        if(event.getPlayer() != null && (event.getAdvancement().getParent() == null || !event.getAdvancement().getParent().getId().equals(new ResourceLocation("minecraft:recipes/root")))) {
             Ledger.addBalance(Ledger.jsonFile, event.getPlayer().getGameProfile().getName(), Config.ADVANCEMENT_REWARD.get());
         }
     }
@@ -158,13 +158,16 @@ public class ServerEvents {
                 if(team.balance >= price) {
                     team.balance -= (price);
                     newChunk.status = ChunkLoader.Status.ON;
+                    serverWorld.setBlockState(newChunk.pos, serverWorld.getBlockState(newChunk.pos).with(Anchor.STATUS, Anchor.Status.ON));
                 } else {
                     team.balance -= (price + Config.OVERDRAFT_FEE.get());
                     newChunk.status = ChunkLoader.Status.STUCK;
+                    serverWorld.setBlockState(newChunk.pos, serverWorld.getBlockState(newChunk.pos).with(Anchor.STATUS, Anchor.Status.STUCK));
                 }
                 Teams.updateTeam(Teams.jsonFile, team);
             } else {
                 newChunk.status = ChunkLoader.Status.OFF;
+                serverWorld.setBlockState(newChunk.pos, serverWorld.getBlockState(newChunk.pos).with(Anchor.STATUS, Anchor.Status.OFF));
             }
         }
     }
@@ -188,13 +191,16 @@ public class ServerEvents {
                         if(team.balance >= price) {
                             team.balance -= (price);
                             chunkLoader.status = ChunkLoader.Status.ON;
+                            serverWorld.setBlockState(chunkLoader.pos, serverWorld.getBlockState(chunkLoader.pos).with(Anchor.STATUS, Anchor.Status.ON));
                         } else {
                             team.balance -= (price + Config.OVERDRAFT_FEE.get());
                             chunkLoader.status = ChunkLoader.Status.STUCK;
+                            serverWorld.setBlockState(chunkLoader.pos, serverWorld.getBlockState(chunkLoader.pos).with(Anchor.STATUS, Anchor.Status.STUCK));
                         }
                         Teams.updateTeam(Teams.jsonFile, team);
                     } else {
                         chunkLoader.status = ChunkLoader.Status.OFF;
+                        serverWorld.setBlockState(chunkLoader.pos, serverWorld.getBlockState(chunkLoader.pos).with(Anchor.STATUS, Anchor.Status.OFF));
                     }
                 }
             }

@@ -1,4 +1,4 @@
-package github.pitbox46.monetamoney.network;
+package github.pitbox46.monetamoney.network.client;
 
 public class CPageChange {
     public final short page;

@@ -3,6 +3,8 @@ package github.pitbox46.monetamoney.network;
 import github.pitbox46.monetamoney.MonetaMoney;
 import github.pitbox46.monetamoney.data.ChunkLoader;
 import github.pitbox46.monetamoney.data.Team;
+import github.pitbox46.monetamoney.network.client.*;
+import github.pitbox46.monetamoney.network.server.*;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkRegistry;

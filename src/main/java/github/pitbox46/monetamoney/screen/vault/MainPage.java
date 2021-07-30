@@ -3,10 +3,10 @@ package github.pitbox46.monetamoney.screen.vault;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import github.pitbox46.monetamoney.blocks.Vault;
 import github.pitbox46.monetamoney.network.*;
+import github.pitbox46.monetamoney.network.client.*;
 import github.pitbox46.monetamoney.screen.ImageTextButton;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
 
 public class MainPage extends Screen {

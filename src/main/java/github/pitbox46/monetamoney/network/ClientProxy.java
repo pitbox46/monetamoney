@@ -1,12 +1,11 @@
 package github.pitbox46.monetamoney.network;
 
-import github.pitbox46.monetamoney.blocks.VaultTile;
 import github.pitbox46.monetamoney.data.Auctioned;
+import github.pitbox46.monetamoney.network.server.*;
 import github.pitbox46.monetamoney.screen.AnchorScreen;
 import github.pitbox46.monetamoney.screen.IStatusable;
 import github.pitbox46.monetamoney.screen.vault.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.network.NetworkEvent;
 

@@ -3,25 +3,21 @@ package github.pitbox46.monetamoney.screen.vault;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import github.pitbox46.monetamoney.blocks.Vault;
-import github.pitbox46.monetamoney.blocks.VaultTile;
 import github.pitbox46.monetamoney.data.Team;
-import github.pitbox46.monetamoney.network.CTeamButton;
-import github.pitbox46.monetamoney.network.CUpdateBalance;
+import github.pitbox46.monetamoney.network.client.CTeamButton;
+import github.pitbox46.monetamoney.network.client.CUpdateBalance;
 import github.pitbox46.monetamoney.network.PacketHandler;
-import github.pitbox46.monetamoney.network.SOpenTeamsPage;
+import github.pitbox46.monetamoney.network.server.SOpenTeamsPage;
 import github.pitbox46.monetamoney.screen.IStatusable;
 import github.pitbox46.monetamoney.screen.ImageTextButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.ImageButton;
 import net.minecraft.client.gui.widget.list.ExtendedList;
-import net.minecraft.client.network.play.NetworkPlayerInfo;
 import net.minecraft.util.ColorHelper;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
 
 public class TeamsPage extends Screen implements IStatusable {
     private final static ResourceLocation TEXTURE = new ResourceLocation("monetamoney:textures/gui/teams.png");

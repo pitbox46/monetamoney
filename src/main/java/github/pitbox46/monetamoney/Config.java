@@ -14,6 +14,8 @@ public class Config {
     public static ForgeConfigSpec.DoubleValue MULTIPLIER_CHUNKLOADER;
     public static ForgeConfigSpec.LongValue OVERDRAFT_FEE;
     public static ForgeConfigSpec.LongValue ADVANCEMENT_REWARD;
+    public static ForgeConfigSpec.LongValue LIST_FEE;
+    public static ForgeConfigSpec.LongValue DAILY_LIST_FEE;
 
     static {
         ForgeConfigSpec.Builder SERVER_BUILDER = new ForgeConfigSpec.Builder();
@@ -35,6 +37,10 @@ public class Config {
                 .defineInRange("multi_chunkloader", 1.1d, 0, Double.MAX_VALUE);
         OVERDRAFT_FEE = SERVER_BUILDER.comment("If a chunk for some reason is still force loaded when a team has no money, an overdraft fee is incurred")
                 .defineInRange("overdraft_fee", 100, 0, Long.MAX_VALUE);
+        LIST_FEE = SERVER_BUILDER.comment("Fee incurred for listing an item")
+                .defineInRange("list_fee", 100, 0, Long.MAX_VALUE);
+        DAILY_LIST_FEE = SERVER_BUILDER.comment("Fee incurred for listing an item")
+                .defineInRange("daily_list_fee", 100, 0, Long.MAX_VALUE);
 
         SERVER_BUILDER.pop();
         SERVER_CONFIG = SERVER_BUILDER.build();

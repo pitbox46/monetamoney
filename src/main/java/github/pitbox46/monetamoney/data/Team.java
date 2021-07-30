@@ -2,13 +2,10 @@ package github.pitbox46.monetamoney.data;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import github.pitbox46.monetamoney.network.SOpenTeamsPage;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
