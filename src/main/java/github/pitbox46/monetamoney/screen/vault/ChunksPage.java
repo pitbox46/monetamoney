@@ -132,7 +132,7 @@ public class ChunksPage extends Screen implements IStatusable {
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
                 if(button == 0) {
                     IFormattableTextComponent message = new StringTextComponent("");
-                    message.appendString(chunkLoader.owner + " | " + chunkLoader.dimensionKey + " | " + chunkLoader.pos.toString() + " | " + chunkLoader.status.name);
+                    message.appendString(chunkLoader.owner + " | " + chunkLoader.dimensionKey + " | " + new ChunkPos(chunkLoader.pos) + " | " + chunkLoader.pos.toString() + " | " + chunkLoader.status.name);
                     minecraft.player.sendStatusMessage(message.mergeStyle(TextFormatting.LIGHT_PURPLE), false);
                     return true;
                 } else {
