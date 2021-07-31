@@ -1,6 +1,7 @@
 package github.pitbox46.monetamoney.network.client;
 
 import github.pitbox46.monetamoney.Config;
+import github.pitbox46.monetamoney.ServerEvents;
 import github.pitbox46.monetamoney.containers.vault.AccountTransactionContainer;
 import github.pitbox46.monetamoney.containers.vault.AuctionHomeContainer;
 import github.pitbox46.monetamoney.containers.vault.AuctionListItemContainer;
@@ -13,6 +14,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -20,7 +23,10 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.fml.network.PacketDistributor;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class CPageChange implements IPacket {
     public short page;
@@ -89,7 +95,15 @@ public class CPageChange implements IPacket {
             } break;
             //Auction list item
             case 7: {
-                PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SSyncFeesPacket(Config.LIST_FEE.get(), Config.DAILY_LIST_FEE.get()));
+                ListNBT auctionList = (ListNBT) Auctioned.auctionedNBT.get("auction");
+                assert auctionList != null;
+
+                Map<String,Integer> itemsByPlayer = auctionList.stream().collect((Supplier<HashMap<String, Integer>>) HashMap::new, (map, inbt) -> map.put(((CompoundNBT) inbt).getString("owner"), map.getOrDefault(((CompoundNBT) inbt).getString("owner"), 0) + 1), HashMap::putAll);
+
+                long price = ServerEvents.calculateListCost(itemsByPlayer.getOrDefault(ctx.getSender().getGameProfile().getName(), 0));
+                long dailyPrice = ServerEvents.calculateDailyListCost(itemsByPlayer.getOrDefault(ctx.getSender().getGameProfile().getName(), 0));
+
+                PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SSyncFeesPacket(price, dailyPrice));
                 PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SSyncAuctionNBT(Auctioned.auctionedNBT));
                 NetworkHooks.openGui(ctx.getSender(), new INamedContainerProvider() {
                     @Override

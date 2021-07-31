@@ -140,10 +140,14 @@ public class ServerEvents {
     public static void collectAuctionFees() {
         ListNBT auctionList = (ListNBT) Auctioned.auctionedNBT.get("auction");
         assert auctionList != null;
+
+        Map<String,Integer> itemsByPlayer = auctionList.stream().collect((Supplier<HashMap<String, Integer>>) HashMap::new, (map, inbt) -> map.put(((CompoundNBT) inbt).getString("owner"), map.getOrDefault(((CompoundNBT) inbt).getString("owner"), 0) + 1), HashMap::putAll);
+
         auctionList.removeIf(inbt -> {
             CompoundNBT nbt = (CompoundNBT) inbt;
-            boolean flag = Ledger.readBalance(Ledger.jsonFile, nbt.getString("owner")) < Config.DAILY_LIST_FEE.get();
-            if(!flag) Ledger.addBalance(Ledger.jsonFile, nbt.getString("owner"), -Config.DAILY_LIST_FEE.get());
+            long price = calculateDailyListCost(itemsByPlayer.getOrDefault(nbt.getString("owner"), 0));
+            boolean flag = Ledger.readBalance(Ledger.jsonFile, nbt.getString("owner")) < price;
+            if(!flag) Ledger.addBalance(Ledger.jsonFile, nbt.getString("owner"), -price);
             return flag;
         });
     }
@@ -158,7 +162,7 @@ public class ServerEvents {
             Map<String,Integer> chunksByPlayer = entry.getValue().stream().collect((Supplier<HashMap<String, Integer>>) HashMap::new, (map, chunkLoader) -> map.put(chunkLoader.owner, map.getOrDefault(chunkLoader.owner, 0) + 1), HashMap::putAll);
 
             if(serverWorld != null && team.equals(Teams.getTeam(Teams.jsonFile, entry.getKey())) && newChunk.status == ChunkLoader.Status.ON) {
-                price = calculateChunksCost(chunksByPlayer.getOrDefault(newChunk.owner, 1));
+                price = calculateChunksCost(chunksByPlayer.getOrDefault(newChunk.owner, 0));
             }
         }
         if(newChunk.status == ChunkLoader.Status.ON) {
@@ -193,7 +197,7 @@ public class ServerEvents {
                 ServerWorld serverWorld = world.getServer().getWorld(RegistryKey.getOrCreateKey(Registry.WORLD_KEY, chunkLoader.dimensionKey));
                 if(serverWorld != null) {
                     Team team = Teams.getTeam(Teams.jsonFile, entry.getKey());
-                    long price = calculateChunksCost(chunksByPlayer.getOrDefault(chunkLoader.owner, 1));
+                    long price = calculateChunksCost(chunksByPlayer.getOrDefault(chunkLoader.owner, 0));
 
                     long chunkLong = new ChunkPos(chunkLoader.pos).asLong();
                     serverWorld.forceChunk(ChunkPos.getX(chunkLong), ChunkPos.getZ(chunkLong), chunkLoader.status == ChunkLoader.Status.ON && team.balance >= price);
@@ -256,6 +260,14 @@ public class ServerEvents {
     }
 
     public static long calculateChunksCost(int chunks) {
-        return (long) (Config.BASE_CHUNKLOADER.get() * Math.pow(Config.MULTIPLIER_CHUNKLOADER.get(), chunks - 1));
+        return (long) (Config.BASE_CHUNKLOADER.get() * Math.pow(Config.MULTIPLIER_CHUNKLOADER.get(), chunks));
+    }
+
+    public static long calculateDailyListCost(int items) {
+        return (long) (Config.DAILY_LIST_FEE.get() * Math.pow(Config.MULTIPILER_DAILY_LIST.get(), items));
+    }
+
+    public static long calculateListCost(int items) {
+        return (long) (Config.LIST_FEE.get() * Math.pow(Config.MULTIPILER_LIST.get(), items));
     }
 }

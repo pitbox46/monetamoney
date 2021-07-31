@@ -15,7 +15,9 @@ public class Config {
     public static ForgeConfigSpec.LongValue OVERDRAFT_FEE;
     public static ForgeConfigSpec.LongValue ADVANCEMENT_REWARD;
     public static ForgeConfigSpec.LongValue LIST_FEE;
+    public static ForgeConfigSpec.DoubleValue MULTIPILER_LIST;
     public static ForgeConfigSpec.LongValue DAILY_LIST_FEE;
+    public static ForgeConfigSpec.DoubleValue MULTIPILER_DAILY_LIST;
 
     static {
         ForgeConfigSpec.Builder SERVER_BUILDER = new ForgeConfigSpec.Builder();
@@ -39,8 +41,14 @@ public class Config {
                 .defineInRange("overdraft_fee", 100, 0, Long.MAX_VALUE);
         LIST_FEE = SERVER_BUILDER.comment("Fee incurred for listing an item")
                 .defineInRange("list_fee", 100, 0, Long.MAX_VALUE);
+        MULTIPILER_LIST = SERVER_BUILDER.comment("The amount that initial listing fee cost scales by. " +
+                "The cost for a listing is this multiplier multiplied by the previous cost")
+                .defineInRange("multi_chunkloader", 1.1d, 0, Double.MAX_VALUE);
         DAILY_LIST_FEE = SERVER_BUILDER.comment("Fee incurred for listing an item")
                 .defineInRange("daily_list_fee", 100, 0, Long.MAX_VALUE);
+        MULTIPILER_DAILY_LIST = SERVER_BUILDER.comment("The amount that daily listing fee cost scales by. " +
+                "The cost for the daily listing fee is this multiplier multiplied by the previous cost")
+                .defineInRange("multi_chunkloader", 1.1d, 0, Double.MAX_VALUE);
 
         SERVER_BUILDER.pop();
         SERVER_CONFIG = SERVER_BUILDER.build();

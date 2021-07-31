@@ -1,6 +1,7 @@
 package github.pitbox46.monetamoney.network.client;
 
 import github.pitbox46.monetamoney.Config;
+import github.pitbox46.monetamoney.ServerEvents;
 import github.pitbox46.monetamoney.containers.vault.AccountTransactionContainer;
 import github.pitbox46.monetamoney.containers.vault.AuctionBuyContainer;
 import github.pitbox46.monetamoney.containers.vault.AuctionListItemContainer;
@@ -15,12 +16,16 @@ import github.pitbox46.monetamoney.network.server.SGuiStatusMessage;
 import github.pitbox46.monetamoney.network.server.SUpdateBalance;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class CTransactionButton implements IPacket {
     public int amount;
@@ -143,10 +148,17 @@ public class CTransactionButton implements IPacket {
                     if(container.handler.getStackInSlot(0).isEmpty() || container.handler.getStackInSlot(0).getItem().getClass() == Coin.class) {
                         PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SGuiStatusMessage(new TranslationTextComponent("message.monetamoney.invaliditem")));
                     } else {
-                        if(Ledger.readBalance(Ledger.jsonFile, player) >= Config.LIST_FEE.get()) {
+                        ListNBT auctionList = (ListNBT) Auctioned.auctionedNBT.get("auction");
+                        assert auctionList != null;
+
+                        Map<String,Integer> itemsByPlayer = auctionList.stream().collect((Supplier<HashMap<String, Integer>>) HashMap::new, (map, inbt) -> map.put(((CompoundNBT) inbt).getString("owner"), map.getOrDefault(((CompoundNBT) inbt).getString("owner"), 0) + 1), HashMap::putAll);
+
+                        long price = ServerEvents.calculateListCost(itemsByPlayer.getOrDefault(player, 0));
+
+                        if(Ledger.readBalance(Ledger.jsonFile, player) >= price) {
                             Auctioned.addListing(Auctioned.auctionedNBT, container.handler.getStackInSlot(0), this.amount, player);
                             container.handler.setStackInSlot(0, ItemStack.EMPTY);
-                            Ledger.addBalance(Ledger.jsonFile, player, -Config.LIST_FEE.get());
+                            Ledger.addBalance(Ledger.jsonFile, player, -price);
                         } else {
                             PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SGuiStatusMessage(new TranslationTextComponent("message.monetamoney.nomoney")));
                         }
