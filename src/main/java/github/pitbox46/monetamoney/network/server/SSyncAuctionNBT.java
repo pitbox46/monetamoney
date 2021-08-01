@@ -1,5 +1,6 @@
 package github.pitbox46.monetamoney.network.server;
 
+import github.pitbox46.monetamoney.MonetaMoney;
 import github.pitbox46.monetamoney.data.Auctioned;
 import github.pitbox46.monetamoney.network.IPacket;
 import net.minecraft.nbt.CompoundNBT;
@@ -29,7 +30,7 @@ public class SSyncAuctionNBT implements IPacket {
 
     @Override
     public void processPacket(NetworkEvent.Context ctx) {
-        Auctioned.auctionedNBT = this.nbt;
+        MonetaMoney.PROXY.handleSSyncAuctionNBT(ctx, this);
     }
 
     public static Function<PacketBuffer,SSyncAuctionNBT> decoder() {

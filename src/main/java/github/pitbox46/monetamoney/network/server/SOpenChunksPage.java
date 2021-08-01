@@ -1,5 +1,6 @@
 package github.pitbox46.monetamoney.network.server;
 
+import github.pitbox46.monetamoney.MonetaMoney;
 import github.pitbox46.monetamoney.data.ChunkLoader;
 import github.pitbox46.monetamoney.data.Team;
 import github.pitbox46.monetamoney.network.IPacket;
@@ -45,9 +46,7 @@ public class SOpenChunksPage implements IPacket {
 
     @Override
     public void processPacket(NetworkEvent.Context ctx) {
-        if(Minecraft.getInstance().world != null) {
-            Minecraft.getInstance().displayGuiScreen(new ChunksPage(this.team, this.chunks));
-        }
+        MonetaMoney.PROXY.handleSOpenChunksPage(ctx, this);
     }
 
     public static Function<PacketBuffer,SOpenChunksPage> decoder() {

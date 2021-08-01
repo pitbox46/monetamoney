@@ -1,5 +1,6 @@
 package github.pitbox46.monetamoney.network.server;
 
+import github.pitbox46.monetamoney.MonetaMoney;
 import github.pitbox46.monetamoney.network.ClientProxy;
 import github.pitbox46.monetamoney.network.IPacket;
 import net.minecraft.network.PacketBuffer;
@@ -32,8 +33,7 @@ public class SSyncFeesPacket implements IPacket {
 
     @Override
     public void processPacket(NetworkEvent.Context ctx) {
-        ClientProxy.fee = this.fee;
-        ClientProxy.dailyFee = this.dailyFee;
+        MonetaMoney.PROXY.handleSSyncFeesPacket(ctx, this);
     }
 
     public static Function<PacketBuffer,SSyncFeesPacket> decoder() {

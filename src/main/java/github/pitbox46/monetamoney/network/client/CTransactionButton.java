@@ -13,6 +13,7 @@ import github.pitbox46.monetamoney.items.Coin;
 import github.pitbox46.monetamoney.network.IPacket;
 import github.pitbox46.monetamoney.network.PacketHandler;
 import github.pitbox46.monetamoney.network.server.SGuiStatusMessage;
+import github.pitbox46.monetamoney.network.server.SSyncFeesPacket;
 import github.pitbox46.monetamoney.network.server.SUpdateBalance;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -151,14 +152,21 @@ public class CTransactionButton implements IPacket {
                         ListNBT auctionList = (ListNBT) Auctioned.auctionedNBT.get("auction");
                         assert auctionList != null;
 
-                        Map<String,Integer> itemsByPlayer = auctionList.stream().collect((Supplier<HashMap<String, Integer>>) HashMap::new, (map, inbt) -> map.put(((CompoundNBT) inbt).getString("owner"), map.getOrDefault(((CompoundNBT) inbt).getString("owner"), 0) + 1), HashMap::putAll);
+                        int items = auctionList.stream().mapToInt((inbt) -> {
+                            CompoundNBT nbt = ((CompoundNBT) inbt);
+                            if(nbt.getString("owner").equals(player)) {
+                                return 1;
+                            }
+                            return 0;
+                        }).sum();;
 
-                        long price = ServerEvents.calculateListCost(itemsByPlayer.getOrDefault(player, 0));
+                        long price = ServerEvents.calculateListCost(items);
 
                         if(Ledger.readBalance(Ledger.jsonFile, player) >= price) {
                             Auctioned.addListing(Auctioned.auctionedNBT, container.handler.getStackInSlot(0), this.amount, player);
                             container.handler.setStackInSlot(0, ItemStack.EMPTY);
                             Ledger.addBalance(Ledger.jsonFile, player, -price);
+                            PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SSyncFeesPacket(ServerEvents.calculateListCost(items + 1), ServerEvents.calculateDailyListCost(items + 1) * (items + 1)));
                         } else {
                             PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SGuiStatusMessage(new TranslationTextComponent("message.monetamoney.nomoney")));
                         }

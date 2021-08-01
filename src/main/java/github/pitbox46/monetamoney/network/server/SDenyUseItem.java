@@ -1,5 +1,6 @@
 package github.pitbox46.monetamoney.network.server;
 
+import github.pitbox46.monetamoney.MonetaMoney;
 import github.pitbox46.monetamoney.network.IPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
@@ -34,9 +35,7 @@ public class SDenyUseItem implements IPacket {
 
     @Override
     public void processPacket(NetworkEvent.Context ctx) {
-        if(Minecraft.getInstance().player != null) {
-            Minecraft.getInstance().player.setHeldItem(this.hand, this.item);
-        }
+        MonetaMoney.PROXY.handleSDenyUseItemPacket(ctx, this);
     }
 
     public static Function<PacketBuffer,SDenyUseItem> decoder() {

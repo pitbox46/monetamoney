@@ -1,5 +1,6 @@
 package github.pitbox46.monetamoney.network.server;
 
+import github.pitbox46.monetamoney.MonetaMoney;
 import github.pitbox46.monetamoney.network.IPacket;
 import github.pitbox46.monetamoney.screen.AnchorScreen;
 import net.minecraft.client.Minecraft;
@@ -29,9 +30,7 @@ public class SOpenAnchorPage implements IPacket {
 
     @Override
     public void processPacket(NetworkEvent.Context ctx) {
-        if(Minecraft.getInstance().world != null) {
-            Minecraft.getInstance().displayGuiScreen(new AnchorScreen(this.active));
-        }
+        MonetaMoney.PROXY.handleSOpenAnchorPage(ctx, this);
     }
 
     public static Function<PacketBuffer,SOpenAnchorPage> decoder() {

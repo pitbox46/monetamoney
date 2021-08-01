@@ -96,6 +96,7 @@ public class AccountTransactionPage extends ContainerScreen<AccountTransactionCo
 
     @Override
     protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int x, int y) {
+        this.renderBackground(matrixStack);
         this.minecraft.textureManager.bindTexture(TEXTURE);
         this.blit(matrixStack, this.getBackgroundXStart(), this.getBackgroundYStart(), 0, 0, 222, 217, 256, 263);
     }
@@ -122,6 +123,11 @@ public class AccountTransactionPage extends ContainerScreen<AccountTransactionCo
     public void setStatus(ITextComponent message) {
         this.status = message;
         this.statusStart = this.minecraft.world.getGameTime();
+    }
+
+    @Override
+    public boolean isPauseScreen() {
+        return false;
     }
 
     private int getBackgroundXStart() {

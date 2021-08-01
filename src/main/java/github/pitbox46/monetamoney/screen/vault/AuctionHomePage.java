@@ -70,6 +70,7 @@ public class AuctionHomePage extends ContainerScreen<AuctionHomeContainer> {
 
     @Override
     protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int x, int y) {
+        this.renderBackground(matrixStack);
         this.minecraft.textureManager.bindTexture(TEXTURE);
         this.blit(matrixStack, this.getBackgroundXStart(), this.getBackgroundYStart(), 0, 0, 222, 256, 256, 302);
     }
@@ -124,6 +125,11 @@ public class AuctionHomePage extends ContainerScreen<AuctionHomeContainer> {
             }, new TranslationTextComponent("button.monetamoney.alllistings")));
         }
         this.editMode = !this.editMode;
+    }
+
+    @Override
+    public boolean isPauseScreen() {
+        return false;
     }
 
     private int getBackgroundXStart() {

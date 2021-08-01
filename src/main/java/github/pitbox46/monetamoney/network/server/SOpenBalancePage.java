@@ -1,5 +1,6 @@
 package github.pitbox46.monetamoney.network.server;
 
+import github.pitbox46.monetamoney.MonetaMoney;
 import github.pitbox46.monetamoney.network.ClientProxy;
 import github.pitbox46.monetamoney.network.IPacket;
 import github.pitbox46.monetamoney.screen.vault.BalancePage;
@@ -34,11 +35,7 @@ public class SOpenBalancePage implements IPacket {
 
     @Override
     public void processPacket(NetworkEvent.Context ctx) {
-        if(Minecraft.getInstance().world != null) {
-            Minecraft.getInstance().displayGuiScreen(new BalancePage());
-            ClientProxy.personalBalance = this.personalBal;
-            ClientProxy.teamBalance = this.teamBal;
-        }
+        MonetaMoney.PROXY.handleSOpenBalancePage(ctx, this);
     }
 
     public static Function<PacketBuffer,SOpenBalancePage> decoder() {

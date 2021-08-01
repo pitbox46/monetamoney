@@ -55,6 +55,8 @@ public class CPageChange implements IPacket {
     public void processPacket(NetworkEvent.Context ctx) {
         if(ctx.getSender() == null) return;
 
+        String player = ctx.getSender().getGameProfile().getName();
+
         short page = this.page;
         int subpage = this.subpage;
 
@@ -98,10 +100,17 @@ public class CPageChange implements IPacket {
                 ListNBT auctionList = (ListNBT) Auctioned.auctionedNBT.get("auction");
                 assert auctionList != null;
 
-                Map<String,Integer> itemsByPlayer = auctionList.stream().collect((Supplier<HashMap<String, Integer>>) HashMap::new, (map, inbt) -> map.put(((CompoundNBT) inbt).getString("owner"), map.getOrDefault(((CompoundNBT) inbt).getString("owner"), 0) + 1), HashMap::putAll);
+                int items = auctionList.stream().mapToInt((inbt) -> {
+                    CompoundNBT nbt = ((CompoundNBT) inbt);
+                    if(nbt.getString("owner").equals(player)) {
+                        return 1;
+                    }
+                    return 0;
+                }).sum();
 
-                long price = ServerEvents.calculateListCost(itemsByPlayer.getOrDefault(ctx.getSender().getGameProfile().getName(), 0));
-                long dailyPrice = ServerEvents.calculateDailyListCost(itemsByPlayer.getOrDefault(ctx.getSender().getGameProfile().getName(), 0));
+                long price = ServerEvents.calculateListCost(items);
+                //Send total new daily price instead of just the extra cost
+                long dailyPrice = ServerEvents.calculateDailyListCost(items) * items;
 
                 PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SSyncFeesPacket(price, dailyPrice));
                 PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SSyncAuctionNBT(Auctioned.auctionedNBT));

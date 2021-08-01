@@ -1,5 +1,6 @@
 package github.pitbox46.monetamoney.network.server;
 
+import github.pitbox46.monetamoney.MonetaMoney;
 import github.pitbox46.monetamoney.network.IPacket;
 import github.pitbox46.monetamoney.screen.IStatusable;
 import net.minecraft.client.Minecraft;
@@ -30,9 +31,7 @@ public class SGuiStatusMessage implements IPacket {
 
     @Override
     public void processPacket(NetworkEvent.Context ctx) {
-        if(Minecraft.getInstance().currentScreen instanceof IStatusable) {
-            ((IStatusable) Minecraft.getInstance().currentScreen).setStatus(this.message);
-        }
+        MonetaMoney.PROXY.handleSGuiStatusMessage(ctx, this);
     }
 
     public static Function<PacketBuffer,SGuiStatusMessage> decoder() {

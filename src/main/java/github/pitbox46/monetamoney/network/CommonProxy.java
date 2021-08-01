@@ -11,6 +11,7 @@ import github.pitbox46.monetamoney.data.*;
 import github.pitbox46.monetamoney.items.Coin;
 import github.pitbox46.monetamoney.network.client.*;
 import github.pitbox46.monetamoney.network.server.*;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -41,5 +42,35 @@ public class CommonProxy {
 
     private void setup(FMLCommonSetupEvent event) {
         PacketHandler.init();
+    }
+
+    public void handleSDenyUseItemPacket(NetworkEvent.Context ctx, SDenyUseItem packet) {
+    }
+
+    public void handleSGuiStatusMessage(NetworkEvent.Context ctx, SGuiStatusMessage packet) {
+    }
+
+    public void handleSOpenAnchorPage(NetworkEvent.Context ctx, SOpenAnchorPage packet) {
+    }
+
+    public void handleSOpenBalancePage(NetworkEvent.Context ctx, SOpenBalancePage packet) {
+    }
+
+    public void handleSOpenChunksPage(NetworkEvent.Context ctx, SOpenChunksPage packet) {
+    }
+
+    public void handleSOpenMainPage(NetworkEvent.Context ctx, SOpenMainPage packet) {
+    }
+
+    public void handleSOpenTeamsPage(NetworkEvent.Context ctx, SOpenTeamsPage packet) {
+    }
+
+    public void handleSSyncAuctionNBT(NetworkEvent.Context ctx, SSyncAuctionNBT packet) {
+    }
+
+    public void handleSSyncFeesPacket(NetworkEvent.Context ctx, SSyncFeesPacket packet) {
+    }
+
+    public void handleSUpdateBalance(NetworkEvent.Context ctx, SUpdateBalance packet) {
     }
 }

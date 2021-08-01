@@ -155,11 +155,12 @@ public class ServerEvents {
     public static void loadNewChunk(World world, Team team, ChunkLoader newChunk) {
         ServerWorld serverWorld = world.getServer().getWorld(RegistryKey.getOrCreateKey(Registry.WORLD_KEY, newChunk.dimensionKey));
         long price = Config.BASE_CHUNKLOADER.get();
+
+        Map<String,Integer> chunksByPlayer = CHUNK_MAP.values().stream().flatMap(Collection::stream).collect((Supplier<HashMap<String, Integer>>) HashMap::new, (map, chunkLoader) -> map.put(chunkLoader.owner, map.getOrDefault(chunkLoader.owner, 0) + 1), HashMap::putAll);
+
         for(Map.Entry<String,List<ChunkLoader>> entry: CHUNK_MAP.entrySet()) {
             /* Unlisted is all the chunks that don't belong to a team, but belong to an owner. These chunks cannot be loaded */
             if(entry.getKey().equals("unlisted")) continue;
-
-            Map<String,Integer> chunksByPlayer = entry.getValue().stream().collect((Supplier<HashMap<String, Integer>>) HashMap::new, (map, chunkLoader) -> map.put(chunkLoader.owner, map.getOrDefault(chunkLoader.owner, 0) + 1), HashMap::putAll);
 
             if(serverWorld != null && team.equals(Teams.getTeam(Teams.jsonFile, entry.getKey())) && newChunk.status == ChunkLoader.Status.ON) {
                 price = calculateChunksCost(chunksByPlayer.getOrDefault(newChunk.owner, 0));
@@ -187,11 +188,11 @@ public class ServerEvents {
     }
 
     public static void loadAndPayChunks(World world) {
+        Map<String,Integer> chunksByPlayer = CHUNK_MAP.values().stream().flatMap(Collection::stream).collect((Supplier<HashMap<String, Integer>>) HashMap::new, (map, chunkLoader) -> map.put(chunkLoader.owner, map.getOrDefault(chunkLoader.owner, 0) + 1), HashMap::putAll);
+
         for(Map.Entry<String,List<ChunkLoader>> entry: CHUNK_MAP.entrySet()) {
             /* Unlisted is all the chunks that don't belong to a team, but belong to an owner. These chunks cannot be loaded */
             if(entry.getKey().equals("unlisted")) continue;
-
-            Map<String,Integer> chunksByPlayer = entry.getValue().stream().collect((Supplier<HashMap<String, Integer>>) HashMap::new, (map, chunkLoader) -> map.put(chunkLoader.owner, map.getOrDefault(chunkLoader.owner, 0) + 1), HashMap::putAll);
 
             for(ChunkLoader chunkLoader : entry.getValue()) {
                 ServerWorld serverWorld = world.getServer().getWorld(RegistryKey.getOrCreateKey(Registry.WORLD_KEY, chunkLoader.dimensionKey));

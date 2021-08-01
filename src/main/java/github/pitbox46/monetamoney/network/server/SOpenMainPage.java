@@ -1,5 +1,6 @@
 package github.pitbox46.monetamoney.network.server;
 
+import github.pitbox46.monetamoney.MonetaMoney;
 import github.pitbox46.monetamoney.network.IPacket;
 import github.pitbox46.monetamoney.screen.vault.MainPage;
 import net.minecraft.client.Minecraft;
@@ -20,7 +21,7 @@ public class SOpenMainPage implements IPacket {
 
     @Override
     public void processPacket(NetworkEvent.Context ctx) {
-        Minecraft.getInstance().displayGuiScreen(new MainPage());
+        MonetaMoney.PROXY.handleSOpenMainPage(ctx, this);
     }
 
     public static Function<PacketBuffer,SOpenMainPage> decoder() {
