@@ -43,7 +43,13 @@ public class CommandRemoveShop implements Command<CommandSource> {
 
     @Override
     public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
-        INBT item = ((ListNBT) Auctioned.auctionedNBT.get("shop")).remove(IntegerArgumentType.getInteger(context, "index"));
+        int index = IntegerArgumentType.getInteger(context, "index");
+        ListNBT shop = (ListNBT) Auctioned.auctionedNBT.get("shop");
+        if (shop == null)
+            throw new SimpleCommandExceptionType(new StringTextComponent("Uh-oh, the shop doesn't exist!")).create();
+        if (shop.size() < index + 1)
+            throw new SimpleCommandExceptionType(new StringTextComponent("Index is out of bounds")).create();
+        INBT item = shop.remove(index);
         try {
             context.getSource().asPlayer().sendStatusMessage(new StringTextComponent("Removed: " + ((CompoundNBT) item).getString("id")), false);
         } catch (CommandSyntaxException e) {
