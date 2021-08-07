@@ -21,7 +21,7 @@ public class SOpenChunksPage implements IPacket {
 
     public SOpenChunksPage(Team team, List<ChunkLoader> chunks) {
         this.team = team;
-        this.chunks = chunks;
+        this.chunks = new ArrayList<>(chunks);
     }
 
     @Override

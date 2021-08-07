@@ -42,7 +42,6 @@ import java.util.function.Supplier;
 
 public class ServerEvents {
     public static final Map<String, List<ChunkLoader>> CHUNK_MAP = new HashMap<>();
-    private int day;
 
     @SubscribeEvent
     public void onServerStarting(FMLServerStartingEvent event) {
@@ -84,12 +83,16 @@ public class ServerEvents {
                     return;
                 }
             }
-            if(event.getEntity() instanceof ServerPlayerEntity) {
-                Team team = Teams.getPlayersTeam(Teams.jsonFile, ((PlayerEntity) event.getEntity()).getGameProfile().getName());
-                String teamKey = team.isNull() ? "unlisted" : team.toString();
-                ServerEvents.CHUNK_MAP.putIfAbsent(teamKey, new ArrayList<>());
-                ServerEvents.CHUNK_MAP.get(teamKey).add(new ChunkLoader(event.getEntity().world.getDimensionKey().getLocation(), pos, ((PlayerEntity) event.getEntity()).getGameProfile().getName(), ChunkLoader.Status.OFF));
-            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
+        if(event.getEntity() instanceof ServerPlayerEntity && event.getPlacedBlock().getBlock().getClass() == Anchor.class) {
+            Team team = Teams.getPlayersTeam(Teams.jsonFile, ((PlayerEntity) event.getEntity()).getGameProfile().getName());
+            String teamKey = team.isNull() ? "unlisted" : team.toString();
+            ServerEvents.CHUNK_MAP.putIfAbsent(teamKey, new ArrayList<>());
+            ServerEvents.CHUNK_MAP.get(teamKey).add(new ChunkLoader(event.getEntity().world.getDimensionKey().getLocation(), event.getPos(), ((PlayerEntity) event.getEntity()).getGameProfile().getName(), ChunkLoader.Status.OFF));
         }
     }
 
@@ -129,8 +132,8 @@ public class ServerEvents {
 
     @SubscribeEvent
     public void onTick(TickEvent.WorldTickEvent event) {
-        if(event.phase == TickEvent.Phase.END && event.side == LogicalSide.SERVER && Calendar.getInstance().get(Calendar.DAY_OF_YEAR) != day) {
-            day = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
+        if(event.phase == TickEvent.Phase.END && event.side == LogicalSide.SERVER && Ledger.getLastTime(Ledger.jsonFile) + 86400000 <= System.currentTimeMillis()) {
+            Ledger.updateLastTime(Ledger.jsonFile);
             loadAndPayChunks(event.world);
             collectAuctionFees();
         }

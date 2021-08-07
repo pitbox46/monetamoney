@@ -25,7 +25,11 @@ public class Ledger {
         try {
             if (file.createNewFile()) {
                 FileWriter writer = new FileWriter(file);
-                writer.write(GSON.toJson(new JsonObject()));
+                JsonObject jsonObject = new JsonObject();
+                JsonObject miscData = new JsonObject();
+                miscData.addProperty("previous_pay", 0);
+                jsonObject.add("%MISC_DATA%", miscData);
+                writer.write(GSON.toJson(jsonObject));
                 writer.close();
             }
         } catch (IOException e) {
@@ -174,5 +178,49 @@ public class Ledger {
         return false;
     }
 
+    public static long getLastTime(File jsonFile) {
+        try (Reader reader = new FileReader(jsonFile)) {
+            JsonObject jsonObject = JSONUtils.fromJson(GSON, reader, JsonObject.class);
+            assert jsonObject != null;
 
+            if (jsonObject.has("%MISC_DATA%")) {
+                JsonObject data = jsonObject.get("%MISC_DATA%").getAsJsonObject();
+                return data.getAsJsonPrimitive("previous_pay").getAsLong();
+            } else {
+                JsonObject data = new JsonObject();
+                data.addProperty("previous_pay", 0);
+                jsonObject.add("%MISC_DATA%", data);
+            }
+            reader.close();
+            FileWriter writer = new FileWriter(jsonFile);
+            writer.write(GSON.toJson(jsonObject));
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public static void updateLastTime(File jsonFile) {
+        try (Reader reader = new FileReader(jsonFile)) {
+            JsonObject jsonObject = JSONUtils.fromJson(GSON, reader, JsonObject.class);
+            assert jsonObject != null;
+
+            if (jsonObject.has("%MISC_DATA%")) {
+                JsonObject data = jsonObject.get("%MISC_DATA%").getAsJsonObject();
+                data.remove("previous_pay");
+                data.addProperty("previous_pay", System.currentTimeMillis());
+            } else {
+                JsonObject data = new JsonObject();
+                data.addProperty("previous_pay", System.currentTimeMillis());
+                jsonObject.add("%MISC_DATA%", data);
+            }
+            reader.close();
+            FileWriter writer = new FileWriter(jsonFile);
+            writer.write(GSON.toJson(jsonObject));
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

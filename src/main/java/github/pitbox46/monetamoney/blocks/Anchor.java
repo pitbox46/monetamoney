@@ -64,12 +64,6 @@ public class Anchor extends Block implements IOnBreak {
         );
     }
 
-    @Override
-    public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
-
-    }
-
     @SuppressWarnings("deprecation")
     @Override
     public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
