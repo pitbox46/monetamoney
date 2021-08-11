@@ -23,6 +23,8 @@
   "info.monetamoney.price": "Price: %s Moneta",
   "info.monetamoney.personalbal": "Personal: %s Moneta",
   "info.monetamoney.teambal": "Team: %s Moneta",
+  "info.monetamoney.dailylistfeefull": "Daily Listing Cost: -%s Moneta",
+  "info.monetamoney.dailychunkfee": "Daily Chunks Cost: -%s Moneta",
   "info.monetamoney.fees": "Fees",
   "info.monetamoney.listfee": "List: %s Moneta",
   "info.monetamoney.dailylistfee": "Daily: %s Moneta",

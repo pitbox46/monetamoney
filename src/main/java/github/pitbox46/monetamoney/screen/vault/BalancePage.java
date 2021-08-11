@@ -20,8 +20,10 @@ public class BalancePage extends Screen {
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(matrixStack, 0);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
-        drawCenteredString(matrixStack, this.font, new TranslationTextComponent("info.monetamoney.personalbal", ClientProxy.personalBalance), width / 2, this.getBackgroundYStart() + 50, ColorHelper.PackedColor.packColor(255, 255, 255, 255));
-        drawCenteredString(matrixStack, this.font, new TranslationTextComponent("info.monetamoney.teambal", ClientProxy.teamBalance), width / 2, this.getBackgroundYStart() + 70, ColorHelper.PackedColor.packColor(255, 255, 255, 255));
+        drawCenteredString(matrixStack, this.font, new TranslationTextComponent("info.monetamoney.personalbal", ClientProxy.personalBalance), width / 2, this.getBackgroundYStart() + 30, ColorHelper.PackedColor.packColor(255, 255, 255, 255));
+        drawCenteredString(matrixStack, this.font, new TranslationTextComponent("info.monetamoney.teambal", ClientProxy.teamBalance), width / 2, this.getBackgroundYStart() + 50, ColorHelper.PackedColor.packColor(255, 255, 255, 255));
+        drawCenteredString(matrixStack, this.font, new TranslationTextComponent("info.monetamoney.dailylistfeefull", ClientProxy.dailyListFee), width / 2, this.getBackgroundYStart() + 70, ColorHelper.PackedColor.packColor(255, 255, 255, 255));
+        drawCenteredString(matrixStack, this.font, new TranslationTextComponent("info.monetamoney.dailychunkfee", ClientProxy.dailyChunkFee), width / 2, this.getBackgroundYStart() + 90, ColorHelper.PackedColor.packColor(255, 255, 255, 255));
     }
 
     @Override

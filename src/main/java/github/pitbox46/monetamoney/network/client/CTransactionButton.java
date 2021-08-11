@@ -2,13 +2,11 @@ package github.pitbox46.monetamoney.network.client;
 
 import github.pitbox46.monetamoney.Config;
 import github.pitbox46.monetamoney.ServerEvents;
+import github.pitbox46.monetamoney.blocks.Anchor;
 import github.pitbox46.monetamoney.containers.vault.AccountTransactionContainer;
 import github.pitbox46.monetamoney.containers.vault.AuctionBuyContainer;
 import github.pitbox46.monetamoney.containers.vault.AuctionListItemContainer;
-import github.pitbox46.monetamoney.data.Auctioned;
-import github.pitbox46.monetamoney.data.Ledger;
-import github.pitbox46.monetamoney.data.Outstanding;
-import github.pitbox46.monetamoney.data.Teams;
+import github.pitbox46.monetamoney.data.*;
 import github.pitbox46.monetamoney.items.Coin;
 import github.pitbox46.monetamoney.network.IPacket;
 import github.pitbox46.monetamoney.network.PacketHandler;
@@ -173,7 +171,18 @@ public class CTransactionButton implements IPacket {
                     }
                 }
             }
-            PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SUpdateBalance(Ledger.readBalance(Ledger.jsonFile, player), Teams.getPlayersTeam(Teams.jsonFile, player).balance));
+            Team team = Teams.getPlayersTeam(Teams.jsonFile, player);
+            int chunks = ServerEvents.CHUNK_MAP.containsKey(team.toString()) ? (int) ServerEvents.CHUNK_MAP.get(team.toString()).stream().filter(c -> c.status == ChunkLoader.Status.ON || c.status == ChunkLoader.Status.STUCK).count() : 0;
+            long dailyChunkFee = ServerEvents.calculateChunksCost(chunks) * chunks;
+
+            ListNBT auctionList = (ListNBT) Auctioned.auctionedNBT.get("auction");
+            assert auctionList != null;
+
+            int listings = (int) auctionList.stream().filter(inbt -> ((CompoundNBT) inbt).getString("owner").equals(player)).count();
+
+            long dailyListingFee = ServerEvents.calculateDailyListCost(listings) * listings;
+
+            PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SUpdateBalance(Ledger.readBalance(Ledger.jsonFile, player), team.balance, dailyChunkFee, dailyListingFee));
         }
     }
 

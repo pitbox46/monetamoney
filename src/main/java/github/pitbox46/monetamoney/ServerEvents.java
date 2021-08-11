@@ -264,14 +264,14 @@ public class ServerEvents {
     }
 
     public static long calculateChunksCost(int chunks) {
-        return (long) (Config.BASE_CHUNKLOADER.get() * Math.pow(Config.MULTIPLIER_CHUNKLOADER.get(), chunks));
+        return (long) (Config.BASE_CHUNKLOADER.get() * Math.pow(Config.MULTIPLIER_CHUNKLOADER.get(), Math.max(chunks - 1, 0)));
     }
 
     public static long calculateDailyListCost(int items) {
-        return (long) (Config.DAILY_LIST_FEE.get() * Math.pow(Config.MULTIPILER_DAILY_LIST.get(), items));
+        return (long) (Config.DAILY_LIST_FEE.get() * Math.pow(Config.MULTIPILER_DAILY_LIST.get(), Math.max(items - 1, 0)));
     }
 
     public static long calculateListCost(int items) {
-        return (long) (Config.LIST_FEE.get() * Math.pow(Config.MULTIPILER_LIST.get(), items));
+        return (long) (Config.LIST_FEE.get() * Math.pow(Config.MULTIPILER_LIST.get(), Math.max(items - 1, 0)));
     }
 }

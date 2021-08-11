@@ -10,12 +10,11 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 public class ClientProxy extends CommonProxy {
-    //List fee
-    public static long fee;
-    public static long dailyFee;
-
     public static long personalBalance = 0;
     public static long teamBalance = 0;
+    public static long dailyChunkFee = 0;
+    public static long dailyListFee = 0;
+    public static long listFee = 0;
 
     public ClientProxy() {
         super();
@@ -78,13 +77,15 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public void handleSSyncFeesPacket(NetworkEvent.Context ctx, SSyncFeesPacket packet) {
-        fee = packet.fee;
-        dailyFee = packet.dailyFee;
+        listFee = packet.fee;
+        dailyListFee = packet.dailyFee;
     }
 
     @Override
     public void handleSUpdateBalance(NetworkEvent.Context ctx, SUpdateBalance packet) {
         personalBalance = packet.personalBal;
         teamBalance = packet.teamBal;
+        dailyListFee = packet.dailyListings;
+        dailyChunkFee = packet.dailyChunks;
     }
 }

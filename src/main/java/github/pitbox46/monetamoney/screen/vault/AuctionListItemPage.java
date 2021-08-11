@@ -2,7 +2,6 @@ package github.pitbox46.monetamoney.screen.vault;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import github.pitbox46.monetamoney.Config;
 import github.pitbox46.monetamoney.blocks.Vault;
 import github.pitbox46.monetamoney.containers.vault.AuctionListItemContainer;
 import github.pitbox46.monetamoney.network.client.CTransactionButton;
@@ -76,10 +75,10 @@ public class AuctionListItemPage extends ContainerScreen<AuctionListItemContaine
         TranslationTextComponent fees = new TranslationTextComponent("info.monetamoney.fees");
         drawString(matrixStack, this.font, fees, this.getBackgroundXStart() + 5, this.getBackgroundYStart() + 18, ColorHelper.PackedColor.packColor(255, 255, 255, 255));
 
-        TranslationTextComponent listFee = new TranslationTextComponent("info.monetamoney.listfee", ClientProxy.fee);
+        TranslationTextComponent listFee = new TranslationTextComponent("info.monetamoney.listfee", ClientProxy.listFee);
         drawString(matrixStack, this.font, listFee, this.getBackgroundXStart() + 5, this.getBackgroundYStart() + 28, ColorHelper.PackedColor.packColor(255, 255, 255, 255));
 
-        TranslationTextComponent dailyFee = new TranslationTextComponent("info.monetamoney.dailylistfee", ClientProxy.dailyFee);
+        TranslationTextComponent dailyFee = new TranslationTextComponent("info.monetamoney.dailylistfee", ClientProxy.dailyListFee);
         drawString(matrixStack, this.font, dailyFee, this.getBackgroundXStart() + 5, this.getBackgroundYStart() + 38, ColorHelper.PackedColor.packColor(255, 255, 255, 255));
 
         this.renderStatus(matrixStack);
