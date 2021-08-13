@@ -125,7 +125,7 @@ public class ServerEvents {
 
     @SubscribeEvent
     public void onAdvancement(AdvancementEvent event) {
-        if(event.getPlayer() != null && (event.getAdvancement().getParent() == null || !event.getAdvancement().getParent().getId().equals(new ResourceLocation("minecraft:recipes/root")))) {
+        if(event.getPlayer() != null && (Config.RECIPES_ARE_ADVANCEMENTS.get() || event.getAdvancement().getParent() == null || !event.getAdvancement().getParent().getId().equals(new ResourceLocation("minecraft:recipes/root")))) {
             Ledger.addBalance(Ledger.jsonFile, event.getPlayer().getGameProfile().getName(), Config.ADVANCEMENT_REWARD.get());
         }
     }

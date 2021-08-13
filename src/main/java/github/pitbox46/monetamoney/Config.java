@@ -7,6 +7,7 @@ public class Config {
 
     public static ForgeConfigSpec SERVER_CONFIG;
 
+    public static ForgeConfigSpec.BooleanValue RECIPES_ARE_ADVANCEMENTS;
     public static ForgeConfigSpec.DoubleValue KILL_MONEY;
     public static ForgeConfigSpec.LongValue INITIAL_BAL;
     public static ForgeConfigSpec.LongValue DAILY_REWARD;
@@ -24,6 +25,8 @@ public class Config {
 
         SERVER_BUILDER.comment("General Settings").push(CATEGORY_GENERAL);
 
+        RECIPES_ARE_ADVANCEMENTS = SERVER_BUILDER.comment("Recipes count as advancements")
+                .define("recipe_advance", false);
         INITIAL_BAL = SERVER_BUILDER.comment("Initial player balance")
                 .defineInRange("init_bal", 1000, 0, Long.MAX_VALUE);
         KILL_MONEY = SERVER_BUILDER.comment("Percent of account balance that is transferred on kill if the killed player has no physical money on person")
