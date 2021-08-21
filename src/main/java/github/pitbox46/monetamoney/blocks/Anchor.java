@@ -13,14 +13,11 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
@@ -35,7 +32,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 
 import static net.minecraft.state.properties.BlockStateProperties.FACING;
@@ -97,17 +93,6 @@ public class Anchor extends Block implements IOnBreak {
                     list.removeIf(chunk -> world.getDimensionKey().getLocation().equals(chunk.dimensionKey) && chunk.pos.equals(pos))
             );
         }
-    }
-
-    @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
-    }
-
-    @Nullable
-    @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new VaultTile();
     }
 
     @Override

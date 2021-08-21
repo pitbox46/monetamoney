@@ -2,7 +2,6 @@ package github.pitbox46.monetamoney.network;
 
 import github.pitbox46.monetamoney.Config;
 import github.pitbox46.monetamoney.ServerEvents;
-import github.pitbox46.monetamoney.blocks.VaultTile;
 import github.pitbox46.monetamoney.containers.vault.AccountTransactionContainer;
 import github.pitbox46.monetamoney.containers.vault.AuctionBuyContainer;
 import github.pitbox46.monetamoney.containers.vault.AuctionHomeContainer;

@@ -197,9 +197,17 @@ public class ServerEvents {
             /* Unlisted is all the chunks that don't belong to a team, but belong to an owner. These chunks cannot be loaded */
             if(entry.getKey().equals("unlisted")) continue;
 
-            for(ChunkLoader chunkLoader : entry.getValue()) {
+            Iterator<ChunkLoader> iterator = entry.getValue().iterator();
+            while(iterator.hasNext()) {
+                ChunkLoader chunkLoader = iterator.next();
                 ServerWorld serverWorld = world.getServer().getWorld(RegistryKey.getOrCreateKey(Registry.WORLD_KEY, chunkLoader.dimensionKey));
                 if(serverWorld != null) {
+                    //Should repair any issues with syncing between loaders list and the world
+                    if(serverWorld.getBlockState(chunkLoader.pos).getBlock().getClass() != Anchor.class) {
+                        iterator.remove();
+                        chunksByPlayer.put(chunkLoader.owner, chunksByPlayer.get(chunkLoader.owner) - 1);
+                        continue;
+                    }
                     Team team = Teams.getTeam(Teams.jsonFile, entry.getKey());
                     long price = calculateChunksCost(chunksByPlayer.getOrDefault(chunkLoader.owner, 0));
 

@@ -1,7 +1,8 @@
 package github.pitbox46.monetamoney.network.client;
 
 import github.pitbox46.monetamoney.ServerEvents;
-import github.pitbox46.monetamoney.blocks.VaultTile;
+import github.pitbox46.monetamoney.blocks.Anchor;
+import github.pitbox46.monetamoney.blocks.Vault;
 import github.pitbox46.monetamoney.data.ChunkLoader;
 import github.pitbox46.monetamoney.data.Team;
 import github.pitbox46.monetamoney.data.Teams;
@@ -39,7 +40,7 @@ public class COpenChunksPage implements IPacket {
 
     @Override
     public void processPacket(NetworkEvent.Context ctx) {
-        if(ctx.getSender() != null && ctx.getSender().getEntityWorld().getTileEntity(this.pos) instanceof VaultTile) {
+        if(ctx.getSender() != null && ctx.getSender().getEntityWorld().getBlockState(this.pos).getBlock().getClass() == Vault.class) {
             Team team = Teams.getTeam(Teams.jsonFile, ctx.getSender().getServerWorld().getDimensionKey().getLocation().toString() + this.pos.toLong());
             List<ChunkLoader> chunks = ServerEvents.CHUNK_MAP.get(team.toString());
             PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SOpenChunksPage(team, chunks == null ? new ArrayList<>(0) : chunks));

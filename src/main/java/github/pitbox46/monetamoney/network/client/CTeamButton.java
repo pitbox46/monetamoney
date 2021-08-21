@@ -1,7 +1,8 @@
 package github.pitbox46.monetamoney.network.client;
 
 import github.pitbox46.monetamoney.ServerEvents;
-import github.pitbox46.monetamoney.blocks.VaultTile;
+import github.pitbox46.monetamoney.blocks.Anchor;
+import github.pitbox46.monetamoney.blocks.Vault;
 import github.pitbox46.monetamoney.data.Team;
 import github.pitbox46.monetamoney.data.Teams;
 import github.pitbox46.monetamoney.network.IPacket;
@@ -44,7 +45,7 @@ public class CTeamButton implements IPacket {
 
     @Override
     public void processPacket(NetworkEvent.Context ctx) {
-        if(ctx.getSender() != null && ctx.getSender().getEntityWorld().getTileEntity(this.pos) instanceof VaultTile) {
+        if(ctx.getSender() != null &&ctx.getSender().getEntityWorld().getBlockState(this.pos).getBlock().getClass() == Vault.class) {
             Team team = Teams.getTeam(Teams.jsonFile, ctx.getSender().getServerWorld().getDimensionKey().getLocation().toString() + this.pos.toLong());
             String player = ctx.getSender().getGameProfile().getName();
             switch (this.button) {

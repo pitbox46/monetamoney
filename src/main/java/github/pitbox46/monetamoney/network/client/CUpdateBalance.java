@@ -1,7 +1,8 @@
 package github.pitbox46.monetamoney.network.client;
 
 import github.pitbox46.monetamoney.ServerEvents;
-import github.pitbox46.monetamoney.blocks.VaultTile;
+import github.pitbox46.monetamoney.blocks.Anchor;
+import github.pitbox46.monetamoney.blocks.Vault;
 import github.pitbox46.monetamoney.data.*;
 import github.pitbox46.monetamoney.network.IPacket;
 import github.pitbox46.monetamoney.network.PacketHandler;
@@ -37,7 +38,7 @@ public class CUpdateBalance implements IPacket {
 
     @Override
     public void processPacket(NetworkEvent.Context ctx) {
-        if(ctx.getSender() != null && ctx.getSender().getEntityWorld().getTileEntity(this.pos) instanceof VaultTile) {
+        if(ctx.getSender() != null && ctx.getSender().getEntityWorld().getBlockState(this.pos).getBlock().getClass() == Vault.class) {
             Team team = Teams.getTeam(Teams.jsonFile, ctx.getSender().getServerWorld().getDimensionKey().getLocation().toString() + this.pos.toLong());
             int chunks = ServerEvents.CHUNK_MAP.containsKey(team.toString()) ? (int) ServerEvents.CHUNK_MAP.get(team.toString()).stream().filter(c -> c.status == ChunkLoader.Status.ON || c.status == ChunkLoader.Status.STUCK).count() : 0;
             long dailyChunkFee = ServerEvents.calculateChunksCost(chunks) * chunks;
