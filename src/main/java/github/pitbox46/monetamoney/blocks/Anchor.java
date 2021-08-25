@@ -13,6 +13,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
+import net.minecraft.block.material.PushReaction;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.BlockItemUseContext;
@@ -113,6 +114,11 @@ public class Anchor extends Block implements IOnBreak {
     @Override
     public boolean isTransparent(BlockState state) {
         return true;
+    }
+
+    @Override
+    public PushReaction getPushReaction(BlockState state) {
+        return PushReaction.BLOCK;
     }
 
     @Nullable
