@@ -14,10 +14,13 @@ repositories {
     maven { //JEI
         url = "https://dvs1.progwml6.com/files/maven/"
     }
+    maven {
+        url 'https://www.cursemaven.com'
+    }
 }
 
 group = 'github.pitbox46'
-version = '1.16.5-1.0.8'
+version = '1.16.5-1.0.9'
 archivesBaseName = 'monetamoney'
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(8) // Mojang ships Java 8 to end users, so your mod should target Java 8.
@@ -124,6 +127,7 @@ dependencies {
 
     compileOnly fg.deobf("mezz.jei:jei-${jei_version}:api")
     runtimeOnly fg.deobf("mezz.jei:jei-${jei_version}")
+    runtimeOnly fg.deobf("curse.maven:invsorter-240633:3077903")
 
     // You may put jars on which you depend on in ./libs or you may define them like so..
     // compile "some.group:artifact:version:classifier"

@@ -14,8 +14,19 @@ public class AuctionBuyContainer extends PlayerInventoryContainer {
 
     public AuctionBuyContainer(int id, PlayerInventory playerInventory, CompoundNBT itemNBT) {
         super(Registration.AUCTION_BUY.get(), id, playerInventory, 31, 117);
-        this.addSlot(new SlotItemHandler(handler, 0, 103, 21));
+        this.addSlot(new SlotItemHandler(handler, 0, 103, 21) {
+            @Override
+            public boolean canTakeStack(PlayerEntity playerIn) {
+                return false;
+            }
+        });
         handler.setStackInSlot(0, ItemStack.read(itemNBT));
+    }
+
+    @Override
+    protected boolean mergeItemStack(ItemStack stack, int startIndex, int endIndex, boolean reverseDirection) {
+        if(ItemStack.areItemStacksEqual(stack, handler.getStackInSlot(0))) return false;
+        return super.mergeItemStack(stack, startIndex, endIndex, reverseDirection);
     }
 
     @Override

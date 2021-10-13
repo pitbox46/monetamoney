@@ -26,7 +26,7 @@ import org.apache.logging.log4j.Logger;
 
 @Mod(MonetaMoney.MODID)
 public class MonetaMoney {
-    private static final Logger LOGGER = LogManager.getLogger();
+    public static final Logger LOGGER = LogManager.getLogger();
 
     public static final String MODID = "monetamoney";
     public static ItemGroup MOD_TAB = new ItemGroup("monetamoney") {

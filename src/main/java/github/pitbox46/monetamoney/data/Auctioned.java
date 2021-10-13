@@ -1,5 +1,6 @@
 package github.pitbox46.monetamoney.data;
 
+import github.pitbox46.monetamoney.MonetaMoney;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
@@ -37,9 +38,8 @@ public class Auctioned {
         try {
             return CompressedStreamTools.read(file);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Auction file failed to load", e);
         }
-        return new CompoundNBT();
     }
 
     public static void write(File file, CompoundNBT nbt) {

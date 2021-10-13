@@ -30,7 +30,7 @@ public class AuctionHomeContainer extends PlayerInventoryContainer {
 
         this.changePage(editMode, page);
 
-        addSlots(this.currentPage, 0, 31, 18, 9, 18, ROWS, 18);
+        addLockedSlots(this.currentPage, 0, 31, 18, 9, 18, ROWS, 18);
     }
 
     public void changePage(boolean editMode, int pageNumber) {
@@ -43,7 +43,6 @@ public class AuctionHomeContainer extends PlayerInventoryContainer {
             ListNBT shop = (ListNBT) Auctioned.auctionedNBT.get("shop");
             ListNBT auction = (ListNBT) Auctioned.auctionedNBT.get("auction");
 
-            shop.sort(Comparator.comparing(nbt -> ((CompoundNBT) nbt).getString("id")));
             auction.sort(Comparator.comparing(nbt -> ((CompoundNBT) nbt).getString("id")));
             
             totalItems.addAll(shop);

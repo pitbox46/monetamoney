@@ -37,9 +37,31 @@ public abstract class PlayerInventoryContainer extends Container {
         return index;
     }
 
+    protected int addLockedSlotRow(IItemHandler handler, int index, int x, int y, int columns, int dx) {
+        for (int i = 0 ; i < columns ; i++) {
+            addSlot(new SlotItemHandler(handler, index, x, y) {
+                @Override
+                public boolean canTakeStack(PlayerEntity playerIn) {
+                    return false;
+                }
+            });
+            x += dx;
+            index++;
+        }
+        return index;
+    }
+
     protected int addSlots(IItemHandler handler, int index, int x, int y, int columns, int dx, int rows, int dy) {
         for (int j = 0 ; j < rows ; j++) {
             index = addSlotRow(handler, index, x, y, columns, dx);
+            y += dy;
+        }
+        return index;
+    }
+
+    protected int addLockedSlots(IItemHandler handler, int index, int x, int y, int columns, int dx, int rows, int dy) {
+        for (int j = 0 ; j < rows ; j++) {
+            index = addLockedSlotRow(handler, index, x, y, columns, dx);
             y += dy;
         }
         return index;
