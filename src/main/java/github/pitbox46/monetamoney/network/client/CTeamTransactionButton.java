@@ -73,7 +73,7 @@ public class CTeamTransactionButton implements IPacket {
                     else if (this.button == CTeamTransactionButton.Button.DEPOSIT) {
                         if (container.handler.getStackInSlot(0).getItem() instanceof Coin) {
                             ItemStack coins = container.handler.getStackInSlot(0);
-                            if (Outstanding.redeemTeamCoin(Outstanding.jsonFile, team, coins.getOrCreateTag().getUniqueId("uuid"))) {
+                            if (!coins.getOrCreateTag().hasUniqueId("uuid") && Outstanding.redeemTeamCoin(Outstanding.jsonFile, team, coins.getOrCreateTag().getUniqueId("uuid"))) {
                                 container.handler.setStackInSlot(0, ItemStack.EMPTY);
                             } else {
                                 PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SGuiStatusMessage(new TranslationTextComponent("message.monetamoney.invalidcoin")));
