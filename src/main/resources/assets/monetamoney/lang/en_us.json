@@ -7,6 +7,7 @@
   "item.monetamoney.coin": "%sMoneta",
   "message.monetamoney.newplayer": "Welcome to this server! You have an initial balance of %s Moneta",
   "message.monetamoney.login_reward": "For logging in, you get a bonus of %s Moneta!",
+  "message.monetamoney.balance": "%s has %s Moneta",
 
   "message.monetamoney.error": "Some error occurred",
   "message.monetamoney.invalidsize": "Cannot withdraw that amount of coins",

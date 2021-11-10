@@ -14,6 +14,7 @@ public class ModCommands {
                         .then(CommandListShop.register(dispatcher))
                         .then(CommandLeaveTeam.register(dispatcher))
                         .then(CommandVerifyCoin.register(dispatcher))
+                        .then(CommandBalance.register(dispatcher))
         );
 
         dispatcher.register(Commands.literal("monetamoney").redirect(cmdTut));
