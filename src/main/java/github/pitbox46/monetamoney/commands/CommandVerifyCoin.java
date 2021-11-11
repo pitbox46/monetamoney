@@ -37,7 +37,7 @@ public class CommandVerifyCoin implements Command<CommandSource> {
         ItemStack itemStack = context.getSource().asPlayer().getHeldItemMainhand();
         if(itemStack.getItem().getClass() == Coin.class && itemStack.hasTag()) {
             CompoundNBT nbt = itemStack.getOrCreateTag();
-            if(Outstanding.isValidCoin(Outstanding.jsonFile, nbt.getUniqueId("uuid"))) {
+            if(nbt.hasUniqueId("uuid") && Outstanding.isValidCoin(Outstanding.jsonFile, nbt.getUniqueId("uuid"))) {
                 context.getSource().asPlayer().sendStatusMessage(new TranslationTextComponent("message.monetamoney.validcoin").mergeStyle(TextFormatting.GREEN), false);
                 return 0;
             }

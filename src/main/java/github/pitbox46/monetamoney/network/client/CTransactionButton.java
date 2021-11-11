@@ -76,7 +76,7 @@ public class CTransactionButton implements IPacket {
                     case DEPOSIT: {
                         if (container.handler.getStackInSlot(0).getItem() instanceof Coin) {
                             ItemStack coins = container.handler.getStackInSlot(0);
-                            if (Outstanding.redeemCoin(Outstanding.jsonFile, player, coins.getOrCreateTag().getUniqueId("uuid"))) {
+                            if (coins.getOrCreateTag().hasUniqueId("uuid") && Outstanding.redeemCoin(Outstanding.jsonFile, player, coins.getTag().getUniqueId("uuid"))) {
                                 container.handler.setStackInSlot(0, ItemStack.EMPTY);
                             } else {
                                 PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SGuiStatusMessage(new TranslationTextComponent("message.monetamoney.invalidcoin")));

@@ -43,7 +43,7 @@ public class CommandBalance {
                                 .then(Commands.argument("amount", IntegerArgumentType.integer(0))
                                         .executes(SET)))
                         .then(Commands.literal("add")
-                                .then(Commands.argument("amount", IntegerArgumentType.integer(0))
+                                .then(Commands.argument("amount", IntegerArgumentType.integer())
                                         .executes(ADD)))
                         .then(Commands.literal("get")
                                 .executes(GET))
