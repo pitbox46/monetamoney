@@ -36,7 +36,6 @@ import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.nio.file.Path;
-import java.sql.Time;
 import java.util.*;
 import java.util.function.Supplier;
 
@@ -132,10 +131,16 @@ public class ServerEvents {
 
     @SubscribeEvent
     public void onTick(TickEvent.WorldTickEvent event) {
-        if(event.phase == TickEvent.Phase.END && event.side == LogicalSide.SERVER && Ledger.getLastTime(Ledger.jsonFile) + 86400000 <= System.currentTimeMillis()) {
-            Ledger.updateLastTime(Ledger.jsonFile);
-            loadAndPayChunks(event.world);
-            collectAuctionFees();
+        if(event.phase == TickEvent.Phase.END && event.side == LogicalSide.SERVER) {
+            if(Ledger.getLastRewardTime(Ledger.jsonFile, "previous_pay") + (1000 * 60 * 60 * 24) <= System.currentTimeMillis()) {
+                Ledger.updateLastTime(Ledger.jsonFile, "previous_pay");
+                loadAndPayChunks(event.world);
+                collectAuctionFees();
+            }
+            if(Ledger.getLastRewardTime(Ledger.jsonFile, "previous_restock") + (Config.RESTOCK_TIME.get() * 60 * 1000) <= System.currentTimeMillis()) {
+                Ledger.updateLastTime(Ledger.jsonFile, "previous_restock");
+                Auctioned.restockShop();
+            }
         }
     }
 

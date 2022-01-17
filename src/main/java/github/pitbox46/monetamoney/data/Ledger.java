@@ -178,18 +178,21 @@ public class Ledger {
         return false;
     }
 
-    public static long getLastTime(File jsonFile) {
+    public static long getLastRewardTime(File jsonFile, String key) {
         try (Reader reader = new FileReader(jsonFile)) {
             JsonObject jsonObject = JSONUtils.fromJson(GSON, reader, JsonObject.class);
             assert jsonObject != null;
 
             if (jsonObject.has("%MISC_DATA%")) {
                 JsonObject data = jsonObject.get("%MISC_DATA%").getAsJsonObject();
-                return data.getAsJsonPrimitive("previous_pay").getAsLong();
+                if(data.has(key)) return data.getAsJsonPrimitive(key).getAsLong();
+                else {
+                    data.addProperty(key, 0);
+                }
             } else {
                 JsonObject data = new JsonObject();
-                data.addProperty("previous_pay", 0);
-                jsonObject.add("%MISC_DATA%", data);
+                data.addProperty(key, 0);
+//                jsonObject.add("%MISC_DATA%", data);
             }
             reader.close();
             FileWriter writer = new FileWriter(jsonFile);
@@ -201,18 +204,18 @@ public class Ledger {
         return 0;
     }
 
-    public static void updateLastTime(File jsonFile) {
+    public static void updateLastTime(File jsonFile, String key) {
         try (Reader reader = new FileReader(jsonFile)) {
             JsonObject jsonObject = JSONUtils.fromJson(GSON, reader, JsonObject.class);
             assert jsonObject != null;
 
             if (jsonObject.has("%MISC_DATA%")) {
                 JsonObject data = jsonObject.get("%MISC_DATA%").getAsJsonObject();
-                data.remove("previous_pay");
-                data.addProperty("previous_pay", System.currentTimeMillis());
+                data.remove(key);
+                data.addProperty(key, System.currentTimeMillis());
             } else {
                 JsonObject data = new JsonObject();
-                data.addProperty("previous_pay", System.currentTimeMillis());
+                data.addProperty(key, System.currentTimeMillis());
                 jsonObject.add("%MISC_DATA%", data);
             }
             reader.close();

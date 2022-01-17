@@ -1,8 +1,6 @@
 package github.pitbox46.monetamoney.data;
 
-import github.pitbox46.monetamoney.MonetaMoney;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.INBT;
@@ -70,12 +68,14 @@ public class Auctioned {
         ((ListNBT) nbt.get("auction")).add(itemNBT);
     }
 
-    public static void addShopListing(CompoundNBT nbt, ItemStack item, int amount) {
+    public static void addShopListing(CompoundNBT nbt, ItemStack item, int buy, int sell, int dailyStock) {
         CompoundNBT itemNBT = new CompoundNBT();
         itemNBT.putUniqueId("uuid", new UUID(System.nanoTime(), Double.doubleToLongBits(Math.random())));
-        itemNBT.putString("owner", "shop listing");
-        itemNBT.putInt("price", amount);
+        itemNBT.putInt("buyPrice", buy);
+        itemNBT.putInt("sellPrice", sell);
         item.write(itemNBT);
+        itemNBT.putInt("dailyStock", dailyStock);
+        itemNBT.putInt("stock", dailyStock);
 
         ((ListNBT) nbt.get("shop")).add(itemNBT);
     }
@@ -102,6 +102,41 @@ public class Auctioned {
                 if (((CompoundNBT) element).getUniqueId("uuid").equals(itemNBT.getUniqueId("uuid"))) {
                     return owner.equals(((CompoundNBT) element).getString("owner"));
                 }
+            }
+        } catch (NullPointerException ignored) {}
+        return false;
+    }
+
+    public static boolean buyFromShop(CompoundNBT itemNBT) {
+        try {
+            for (INBT element : (ListNBT) Auctioned.auctionedNBT.get("shop")) {
+                CompoundNBT item = (CompoundNBT) element;
+                if (item.getUniqueId("uuid").equals(itemNBT.getUniqueId("uuid")) && item.getInt("stock") > 0) {
+                    item.putInt("stock", item.getInt("stock") - 1);
+                    return true;
+                }
+            }
+        } catch (NullPointerException ignored) {}
+        return false;
+    }
+
+    public static int getStock(CompoundNBT itemNBT) {
+        try {
+            for (INBT element : (ListNBT) Auctioned.auctionedNBT.get("shop")) {
+                CompoundNBT item = (CompoundNBT) element;
+                if (item.getUniqueId("uuid").equals(itemNBT.getUniqueId("uuid"))) {
+                    return item.getInt("stock");
+                }
+            }
+        } catch (NullPointerException ignored) {}
+        return 0;
+    }
+
+    public static boolean restockShop() {
+        try {
+            for (INBT element : (ListNBT) Auctioned.auctionedNBT.get("shop")) {
+                CompoundNBT item = (CompoundNBT) element;
+                item.putInt("stock", item.getInt("dailyStock"));
             }
         } catch (NullPointerException ignored) {}
         return false;

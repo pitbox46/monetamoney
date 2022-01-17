@@ -37,10 +37,15 @@ public class MainPage extends Screen {
             PacketHandler.CHANNEL.sendToServer(new COpenChunksPage(Vault.lastOpenedVault));
             PacketHandler.CHANNEL.sendToServer(new CUpdateBalance(Vault.lastOpenedVault));
         }, new TranslationTextComponent("button.monetamoney.chunks")));
-        this.addButton(new ImageTextButton((width - 150) / 2, (height / 2) + y + (dy += 25), 154, 23, 0, 136, 23, TEXTURE, (button) -> {
+        this.addButton(new ImageTextButton((width - 150) / 2, (height / 2) + y + (dy += 25), 76, 23, 0, 182, 23, TEXTURE, (button) -> {
+            PacketHandler.CHANNEL.sendToServer(new CPageChange((short) 8, (short) 0));
+            PacketHandler.CHANNEL.sendToServer(new CUpdateBalance(Vault.lastOpenedVault));
+        }, new TranslationTextComponent("button.monetamoney.shop")));
+        this.addButton(new ImageTextButton((width + 4) / 2, (height / 2) + y + dy, 76, 23, 0, 182, 23, TEXTURE, (button) -> {
             PacketHandler.CHANNEL.sendToServer(new CPageChange((short) 5, (short) 0));
             PacketHandler.CHANNEL.sendToServer(new CUpdateBalance(Vault.lastOpenedVault));
         }, new TranslationTextComponent("button.monetamoney.auction")));
+
     }
 
     @Override

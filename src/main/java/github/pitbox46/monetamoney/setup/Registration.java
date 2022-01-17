@@ -4,11 +4,8 @@ import github.pitbox46.monetamoney.MonetaMoney;
 import github.pitbox46.monetamoney.blocks.Anchor;
 import github.pitbox46.monetamoney.blocks.Vault;
 
+import github.pitbox46.monetamoney.containers.vault.*;
 import github.pitbox46.monetamoney.items.Coin;
-import github.pitbox46.monetamoney.containers.vault.AuctionBuyContainer;
-import github.pitbox46.monetamoney.containers.vault.AuctionHomeContainer;
-import github.pitbox46.monetamoney.containers.vault.AccountTransactionContainer;
-import github.pitbox46.monetamoney.containers.vault.AuctionListItemContainer;
 import net.minecraft.block.Block;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.BlockItem;
@@ -47,4 +44,6 @@ public class Registration {
     public static final RegistryObject<ContainerType<AuctionHomeContainer>> AUCTION_HOME = CONTAINERS.register("auction_home", () -> IForgeContainerType.create((windowId, inv, data) -> new AuctionHomeContainer(windowId, inv, false, data.readInt())));
     public static final RegistryObject<ContainerType<AuctionBuyContainer>> AUCTION_BUY = CONTAINERS.register("auction_buy", () -> IForgeContainerType.create((windowId, inv, data) -> new AuctionBuyContainer(windowId, inv, data.readCompoundTag())));
     public static final RegistryObject<ContainerType<AuctionListItemContainer>> AUCTION_LIST = CONTAINERS.register("auction_list", () -> IForgeContainerType.create((windowId, inv, data) -> new AuctionListItemContainer(windowId, inv)));
+    public static final RegistryObject<ContainerType<ShopHomeContainer>> SHOP_HOME = CONTAINERS.register("shop_home", () -> IForgeContainerType.create((windowId, inv, data) -> new ShopHomeContainer(windowId, inv, data.readInt())));
+    public static final RegistryObject<ContainerType<ShopBuyContainer>> SHOP_BUY = CONTAINERS.register("shop_buy", () -> IForgeContainerType.create((windowId, inv, data) -> new ShopBuyContainer(windowId, inv, data.readCompoundTag(), data.readInt())));
 }

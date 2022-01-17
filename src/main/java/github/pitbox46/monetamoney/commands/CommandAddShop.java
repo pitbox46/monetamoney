@@ -28,19 +28,21 @@ public class CommandAddShop implements Command<CommandSource> {
         return Commands
                 .literal("addshop")
                 .requires(commandSource -> commandSource.hasPermissionLevel(2))
-                .then(Commands.argument("price", IntegerArgumentType.integer(0))
-                        .then(Commands.literal("mainhand")
-                                .executes(FROM_HAND))
-                        .then(Commands.argument("amount", IntegerArgumentType.integer(0, 64))
-                                .then(Commands.argument("item", ItemArgument.item())
-                                        .executes(CMD)))
-                );
+                .then(Commands.argument("dailyStock", IntegerArgumentType.integer(0))
+                        .then(Commands.argument("buyPrice", IntegerArgumentType.integer(0))
+                                .then(Commands.argument("sellPrice", IntegerArgumentType.integer(0))
+                                        .then(Commands.literal("mainhand")
+                                                .executes(FROM_HAND))
+                                        .then(Commands.argument("amount", IntegerArgumentType.integer(0, 64))
+                                                .then(Commands.argument("item", ItemArgument.item())
+                                                        .executes(CMD)))
+                )));
     }
 
     @Override
     public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
         ItemStack itemStack = ItemArgument.getItem(context, "item").createStack(IntegerArgumentType.getInteger(context, "amount"), false);
-        Auctioned.addShopListing(Auctioned.auctionedNBT, itemStack, IntegerArgumentType.getInteger(context, "price"));
+        Auctioned.addShopListing(Auctioned.auctionedNBT, itemStack, IntegerArgumentType.getInteger(context, "buyPrice"), IntegerArgumentType.getInteger(context, "sellPrice"), IntegerArgumentType.getInteger(context, "dailyStock"));
         return 0;
     }
 
@@ -54,7 +56,7 @@ public class CommandAddShop implements Command<CommandSource> {
                 throw new SimpleCommandExceptionType(new StringTextComponent("Can't list coins")).create();
 
             ItemStack itemStack = context.getSource().asPlayer().getHeldItemMainhand();
-            Auctioned.addShopListing(Auctioned.auctionedNBT, itemStack, IntegerArgumentType.getInteger(context, "price"));
+            Auctioned.addShopListing(Auctioned.auctionedNBT, itemStack, IntegerArgumentType.getInteger(context, "buyPrice"), IntegerArgumentType.getInteger(context, "sellPrice"), IntegerArgumentType.getInteger(context, "dailyStock"));
             return 0;
         }
     }

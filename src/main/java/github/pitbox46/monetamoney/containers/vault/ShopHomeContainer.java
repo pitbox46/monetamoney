@@ -15,36 +15,32 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class AuctionHomeContainer extends PlayerInventoryContainer {
+public class ShopHomeContainer extends PlayerInventoryContainer {
     public static final int SLOTS = 63;
     public static final int ROWS = 7;
     public static final List<ItemStackHandler> PAGES = new ArrayList<>();
 
     public final ItemStackHandler currentPage = new ItemStackHandler(SLOTS);
 
-    public boolean editMode;
     public int pageNumber;
 
-    public AuctionHomeContainer(int id, PlayerInventory playerInventory, boolean editMode, int page) {
-        super(Registration.AUCTION_HOME.get(), id, playerInventory, 31, 173);
+    public ShopHomeContainer(int id, PlayerInventory playerInventory, int page) {
+        super(Registration.SHOP_HOME.get(), id, playerInventory, 31, 173);
 
-        this.changePage(editMode, page);
+        this.changePage(page);
 
         addLockedSlots(this.currentPage, 0, 31, 18, 9, 18, ROWS, 18);
     }
 
-    public void changePage(boolean editMode, int pageNumber) {
-        this.editMode = editMode;
+    public void changePage(int pageNumber) {
         this.pageNumber = pageNumber;
 
         List<ItemStackHandler> pages = new ArrayList<>();
         if(Auctioned.auctionedNBT.get("shop") instanceof ListNBT) {
             ListNBT totalItems = new ListNBT();
-            ListNBT auction = (ListNBT) Auctioned.auctionedNBT.get("auction");
+            ListNBT shop = (ListNBT) Auctioned.auctionedNBT.get("shop");
 
-            auction.sort(Comparator.comparing(nbt -> ((CompoundNBT) nbt).getString("id")));
-
-            totalItems.addAll(auction);
+            totalItems.addAll(shop);
 
             NonNullList<ItemStack> items = NonNullList.withSize(SLOTS, ItemStack.EMPTY);
 
@@ -54,29 +50,15 @@ public class AuctionHomeContainer extends PlayerInventoryContainer {
                     items = NonNullList.withSize(SLOTS, ItemStack.EMPTY);
                 }
                 CompoundNBT compoundNBT = (CompoundNBT) totalItems.get(i);
-                if(this.editMode) {
-                    if (compoundNBT.getString("owner").equals(this.playerEntity.getGameProfile().getName())) {
-                        ItemStack itemStack = ItemStack.read(compoundNBT);
-                        itemStack.getOrCreateTag().putUniqueId("uuid", compoundNBT.getUniqueId("uuid"));
-                        itemStack.getTag().putString("owner", this.playerEntity.getGameProfile().getName());
-                        itemStack.getTag().putInt("price", compoundNBT.getInt("price"));
-                        items.set(itemsAdded % SLOTS, itemStack);
-                        itemsAdded++;
-                    }
-                }
-                else {
-                    ItemStack itemStack = ItemStack.read(compoundNBT);
-                    itemStack.getOrCreateTag().putUniqueId("uuid", compoundNBT.getUniqueId("uuid"));
-                    itemStack.getTag().putString("owner", compoundNBT.getString("owner"));
-                    itemStack.getTag().putInt("price", compoundNBT.getInt("price"));
-                    items.set(itemsAdded % SLOTS, itemStack);
-                    itemsAdded++;
-                }
+                ItemStack itemStack = ItemStack.read(compoundNBT);
+                itemStack.getOrCreateTag().putUniqueId("uuid", compoundNBT.getUniqueId("uuid"));
+                itemStack.getTag().putInt("buyPrice", compoundNBT.getInt("buyPrice"));
+                itemStack.getTag().putInt("sellPrice", compoundNBT.getInt("sellPrice"));
+                items.set(itemsAdded % SLOTS, itemStack);
+                itemsAdded++;
             }
-            if(!this.editMode) {
-                PAGES.clear();
-                PAGES.addAll(pages);
-            }
+            PAGES.clear();
+            PAGES.addAll(pages);
             pages.add(new ItemStackHandler(items));
         }
         if(pages.size() <= this.pageNumber) {

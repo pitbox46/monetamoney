@@ -2,8 +2,9 @@ package github.pitbox46.monetamoney.screen.vault;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import github.pitbox46.monetamoney.blocks.Vault;
-import github.pitbox46.monetamoney.containers.vault.AuctionHomeContainer;
-import github.pitbox46.monetamoney.network.*;
+import github.pitbox46.monetamoney.containers.vault.ShopHomeContainer;
+import github.pitbox46.monetamoney.network.ClientProxy;
+import github.pitbox46.monetamoney.network.PacketHandler;
 import github.pitbox46.monetamoney.network.client.COpenBuyPage;
 import github.pitbox46.monetamoney.network.client.CPageChange;
 import github.pitbox46.monetamoney.network.client.CUpdateBalance;
@@ -26,13 +27,11 @@ import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.List;
 
-public class AuctionHomePage extends ContainerScreen<AuctionHomeContainer> {
+public class ShopHomePage extends ContainerScreen<ShopHomeContainer> {
     private static final ResourceLocation TEXTURE = new ResourceLocation("monetamoney:textures/gui/auction.png");
 
-    protected boolean editMode = false;
-
-    public AuctionHomePage(AuctionHomeContainer screenContainer, PlayerInventory inv) {
-        super(screenContainer, inv, new TranslationTextComponent("screen.monetamoney.auctionhome"));
+    public ShopHomePage(ShopHomeContainer screenContainer, PlayerInventory inv) {
+        super(screenContainer, inv, new TranslationTextComponent("screen.monetamoney.shophome"));
         this.xSize = 222;
         this.ySize = 256;
     }
@@ -42,23 +41,14 @@ public class AuctionHomePage extends ContainerScreen<AuctionHomeContainer> {
         super.init();
         //Left arrow
         this.addButton(new ImageButton(this.getBackgroundXStart() + 10, this.getBackgroundYStart() + 127, 15, 15, 100, 256, 15, TEXTURE, 256, 302, button -> {
-            PacketHandler.CHANNEL.sendToServer(new CPageChange((short) (this.editMode ? 6 : 5), Math.max(container.pageNumber - 1, 0)));
+            PacketHandler.CHANNEL.sendToServer(new CPageChange((short) 8, Math.max(container.pageNumber - 1, 0)));
             PacketHandler.CHANNEL.sendToServer(new CUpdateBalance(Vault.lastOpenedVault));
         }));
         //Right arrow
         this.addButton(new ImageButton(this.getBackgroundXStart() + 197, this.getBackgroundYStart() + 127, 15, 15, 115, 256, 15, TEXTURE, 256, 302, button -> {
-            PacketHandler.CHANNEL.sendToServer(new CPageChange((short) (this.editMode ? 6 : 5), Math.max(container.pageNumber + 1, 0)));
+            PacketHandler.CHANNEL.sendToServer(new CPageChange((short) 8, Math.max(container.pageNumber + 1, 0)));
             PacketHandler.CHANNEL.sendToServer(new CUpdateBalance(Vault.lastOpenedVault));
         }));
-        this.addButton(new ImageTextButton(this.getBackgroundXStart() + 9, this.getBackgroundYStart() + 147, 100, 23, 0, 256, 23, TEXTURE, 256, 302, button -> {
-            PacketHandler.CHANNEL.sendToServer(new CPageChange((short) 7, (short) 0));
-            PacketHandler.CHANNEL.sendToServer(new CUpdateBalance(Vault.lastOpenedVault));
-        }, new TranslationTextComponent("button.monetamoney.listitem")));
-        this.addButton(new ImageTextButton(this.getBackgroundXStart() + 116, this.getBackgroundYStart() + 147, 100, 23, 0, 256, 23, TEXTURE, 256, 302, button -> {
-            PacketHandler.CHANNEL.sendToServer(new CPageChange((short) 6, (short) 0));
-            toggleButton(button);
-            PacketHandler.CHANNEL.sendToServer(new CUpdateBalance(Vault.lastOpenedVault));
-        }, new TranslationTextComponent("button.monetamoney.editlistings")));
     }
 
     @Override
@@ -83,7 +73,7 @@ public class AuctionHomePage extends ContainerScreen<AuctionHomeContainer> {
     protected void handleMouseClick(Slot slotIn, int slotId, int mouseButton, ClickType type) {
         if(slotIn != null && type == ClickType.PICKUP && slotIn.slotNumber > 35) {
             if(!slotIn.getStack().isEmpty()) {
-                PacketHandler.CHANNEL.sendToServer(new COpenBuyPage(slotIn.getStack().write(new CompoundNBT()), COpenBuyPage.Type.AUCTION));
+                PacketHandler.CHANNEL.sendToServer(new COpenBuyPage(slotIn.getStack().write(new CompoundNBT()), COpenBuyPage.Type.SHOP));
             }
         } else if(slotIn != null && slotIn.slotNumber > 35) {
 
@@ -95,9 +85,9 @@ public class AuctionHomePage extends ContainerScreen<AuctionHomeContainer> {
     @Override
     public List<ITextComponent> getTooltipFromItem(ItemStack itemStack) {
         List<ITextComponent> lines = itemStack.getTooltip(this.minecraft.player, this.minecraft.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL);
-        if(itemStack.getTag() != null && itemStack.getTag().getInt("price") != 0) {
-            lines.add(1, new StringTextComponent(itemStack.getTag().getInt("price") + " Coins").mergeStyle(TextFormatting.YELLOW));
-            lines.add(2, new StringTextComponent("Owner: " + itemStack.getTag().getString("owner")));
+        if(itemStack.getTag() != null && itemStack.getTag().getInt("buyPrice") != 0) {
+            lines.add(1, new StringTextComponent("Buy Price: " + itemStack.getTag().getInt("buyPrice") + " Coins").mergeStyle(TextFormatting.YELLOW));
+            lines.add(2, new StringTextComponent("Sell Price: " + itemStack.getTag().getInt("sellPrice") + " Coins").mergeStyle(TextFormatting.YELLOW));
         }
         return lines;
     }
@@ -106,25 +96,6 @@ public class AuctionHomePage extends ContainerScreen<AuctionHomeContainer> {
     public void closeScreen() {
         this.minecraft.player.closeScreen();
         this.minecraft.displayGuiScreen(new MainPage());
-    }
-
-    private void toggleButton(Button pressedButton) {
-        if(this.editMode) {
-            this.buttons.remove(pressedButton);
-            this.children.remove(pressedButton);
-            this.addButton(new ImageTextButton(this.getBackgroundXStart() + 116, this.getBackgroundYStart() + 147, 100, 23, 0, 256, 23, TEXTURE, 256, 302, button -> {
-                PacketHandler.CHANNEL.sendToServer(new CPageChange((short) 6, (short) 0));
-                toggleButton(button);
-            }, new TranslationTextComponent("button.monetamoney.editlistings")));
-        } else {
-            this.buttons.remove(pressedButton);
-            this.children.remove(pressedButton);
-            this.addButton(new ImageTextButton(this.getBackgroundXStart() + 116, this.getBackgroundYStart() + 147, 100, 23, 0, 256, 23, TEXTURE, 256, 302, button -> {
-                PacketHandler.CHANNEL.sendToServer(new CPageChange((short) 5, (short) 0));
-                toggleButton(button);
-            }, new TranslationTextComponent("button.monetamoney.alllistings")));
-        }
-        this.editMode = !this.editMode;
     }
 
     @Override

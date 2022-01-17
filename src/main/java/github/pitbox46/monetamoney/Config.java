@@ -19,6 +19,7 @@ public class Config {
     public static ForgeConfigSpec.DoubleValue MULTIPILER_LIST;
     public static ForgeConfigSpec.LongValue DAILY_LIST_FEE;
     public static ForgeConfigSpec.DoubleValue MULTIPILER_DAILY_LIST;
+    public static ForgeConfigSpec.LongValue RESTOCK_TIME;
 
     static {
         ForgeConfigSpec.Builder SERVER_BUILDER = new ForgeConfigSpec.Builder();
@@ -52,6 +53,8 @@ public class Config {
         MULTIPILER_DAILY_LIST = SERVER_BUILDER.comment("The amount that daily listing fee cost scales by. " +
                 "The cost for the daily listing fee is this multiplier multiplied by the previous cost")
                 .defineInRange("multi_chunkloader", 1.1d, 0, Double.MAX_VALUE);
+        RESTOCK_TIME = SERVER_BUILDER.comment("Time in between shop restocks in MINUTES")
+                .defineInRange("restock_time", 60 * 24, 1, Long.MAX_VALUE);
 
         SERVER_BUILDER.pop();
         SERVER_CONFIG = SERVER_BUILDER.build();

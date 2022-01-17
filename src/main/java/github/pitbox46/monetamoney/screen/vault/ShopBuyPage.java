@@ -2,8 +2,9 @@ package github.pitbox46.monetamoney.screen.vault;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import github.pitbox46.monetamoney.blocks.Vault;
-import github.pitbox46.monetamoney.containers.vault.AuctionBuyContainer;
-import github.pitbox46.monetamoney.network.*;
+import github.pitbox46.monetamoney.containers.vault.ShopBuyContainer;
+import github.pitbox46.monetamoney.network.ClientProxy;
+import github.pitbox46.monetamoney.network.PacketHandler;
 import github.pitbox46.monetamoney.network.client.CTransactionButton;
 import github.pitbox46.monetamoney.network.client.CUpdateBalance;
 import github.pitbox46.monetamoney.screen.IStatusable;
@@ -17,16 +18,15 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
-public class AuctionBuyPage extends ContainerScreen<AuctionBuyContainer> implements IStatusable {
+public class ShopBuyPage extends ContainerScreen<ShopBuyContainer> implements IStatusable {
     private static final ResourceLocation TEXTURE = new ResourceLocation("monetamoney:textures/gui/changebalance.png");
     protected static final int STATUS_TIMER = 100;
 
     protected ITextComponent status;
     protected long statusStart;
-    protected boolean editMode;
 
-    public AuctionBuyPage(AuctionBuyContainer screenContainer, PlayerInventory inv) {
-        super(screenContainer, inv, new TranslationTextComponent("screen.monetamoney.auctionbuy"));
+    public ShopBuyPage(ShopBuyContainer screenContainer, PlayerInventory inv) {
+        super(screenContainer, inv, new TranslationTextComponent("screen.monetamoney.shopbuy"));
         this.xSize = 222;
         this.ySize = 217;
     }
@@ -34,18 +34,15 @@ public class AuctionBuyPage extends ContainerScreen<AuctionBuyContainer> impleme
     @Override
     protected void init() {
         super.init();
-        this.editMode = this.container.handler.getStackInSlot(0).getOrCreateTag().getString("owner").equals(this.minecraft.player.getGameProfile().getName());
-        if(!editMode) {
-            this.addButton(new ImageTextButton(this.getBackgroundXStart() + 62, this.getBackgroundYStart() + 84, 100, 23, 0, 217, 23, TEXTURE, 256, 263, button -> {
-                PacketHandler.CHANNEL.sendToServer(new CTransactionButton(this.container.handler.getStackInSlot(0).getOrCreateTag().getInt("price"), CTransactionButton.Button.BUY));
-                PacketHandler.CHANNEL.sendToServer(new CUpdateBalance(Vault.lastOpenedVault));
-            }, new TranslationTextComponent("button.monetamoney.buy")));
-        } else {
-            this.addButton(new ImageTextButton(this.getBackgroundXStart() + 62, this.getBackgroundYStart() + 84, 100, 23, 0, 217, 23, TEXTURE, 256, 263, button -> {
-                PacketHandler.CHANNEL.sendToServer(new CTransactionButton(0, CTransactionButton.Button.REMOVE));
-                PacketHandler.CHANNEL.sendToServer(new CUpdateBalance(Vault.lastOpenedVault));
-            }, new TranslationTextComponent("button.monetamoney.remove")));
-        }
+        this.addButton(new ImageTextButton(this.getBackgroundXStart() + 62, this.getBackgroundYStart() + 66, 100, 23, 0, 217, 23, TEXTURE, 256, 263, button -> {
+            PacketHandler.CHANNEL.sendToServer(new CTransactionButton(this.container.handler.getStackInSlot(0).getOrCreateTag().getInt("buyPrice"), CTransactionButton.Button.BUY));
+            PacketHandler.CHANNEL.sendToServer(new CUpdateBalance(Vault.lastOpenedVault));
+            if(this.container.stock > 0) this.container.stock--;
+        }, new TranslationTextComponent("button.monetamoney.buy")));
+        this.addButton(new ImageTextButton(this.getBackgroundXStart() + 62, this.getBackgroundYStart() + 90, 100, 23, 0, 217, 23, TEXTURE, 256, 263, button -> {
+            PacketHandler.CHANNEL.sendToServer(new CTransactionButton(this.container.handler.getStackInSlot(0).getOrCreateTag().getInt("sellPrice"), CTransactionButton.Button.SELL));
+            PacketHandler.CHANNEL.sendToServer(new CUpdateBalance(Vault.lastOpenedVault));
+        }, new TranslationTextComponent("button.monetamoney.sell")));
     }
 
     @Override
@@ -76,8 +73,8 @@ public class AuctionBuyPage extends ContainerScreen<AuctionBuyContainer> impleme
 
     protected void drawInfoStrings(MatrixStack matrixStack) {
         if(!this.container.handler.getStackInSlot(0).isEmpty()) {
-            drawCenteredString(matrixStack, this.font, new TranslationTextComponent("info.monetamoney.owner", this.container.handler.getStackInSlot(0).getTag().getString("owner")), width / 2, this.getBackgroundYStart() + 45, ColorHelper.PackedColor.packColor(255, 255, 255, 255));
-            drawCenteredString(matrixStack, this.font, new TranslationTextComponent("info.monetamoney.price", this.container.handler.getStackInSlot(0).getTag().getInt("price")), width / 2, this.getBackgroundYStart() + 55, ColorHelper.PackedColor.packColor(255, 255, 255, 255));
+            drawCenteredString(matrixStack, this.font, new TranslationTextComponent("info.monetamoney.buyPrice", this.container.handler.getStackInSlot(0).getTag().getInt("buyPrice")).appendString(" ").appendSibling(new TranslationTextComponent("info.monetamoney.sellPrice", this.container.handler.getStackInSlot(0).getTag().getInt("sellPrice"))), width / 2, this.getBackgroundYStart() + 45, ColorHelper.PackedColor.packColor(255, 255, 255, 255));
+            drawCenteredString(matrixStack, this.font, new TranslationTextComponent("info.monetamoney.stock", this.container.stock), width / 2, this.getBackgroundYStart() + 55, ColorHelper.PackedColor.packColor(255, 255, 255, 255));
         }
         drawString(matrixStack, this.font, new TranslationTextComponent("info.monetamoney.personalbal", ClientProxy.personalBalance), this.getBackgroundXStart() + 5, this.getBackgroundYStart() + 5, ColorHelper.PackedColor.packColor(255, 255, 255, 255));
     }

@@ -5,6 +5,7 @@ import github.pitbox46.monetamoney.ServerEvents;
 import github.pitbox46.monetamoney.containers.vault.AccountTransactionContainer;
 import github.pitbox46.monetamoney.containers.vault.AuctionHomeContainer;
 import github.pitbox46.monetamoney.containers.vault.AuctionListItemContainer;
+import github.pitbox46.monetamoney.containers.vault.ShopHomeContainer;
 import github.pitbox46.monetamoney.data.Auctioned;
 import github.pitbox46.monetamoney.network.IPacket;
 import github.pitbox46.monetamoney.network.PacketHandler;
@@ -77,11 +78,10 @@ public class CPageChange implements IPacket {
             } break;
             //Auction
             case 5: case 6: {
+                PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SSyncAuctionNBT(Auctioned.auctionedNBT));
                 if(ctx.getSender().openContainer instanceof AuctionHomeContainer) {
-                    PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SSyncAuctionNBT(Auctioned.auctionedNBT));
                     ((AuctionHomeContainer) ctx.getSender().openContainer).changePage(page == 6, subpage);
                 } else {
-                    PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SSyncAuctionNBT(Auctioned.auctionedNBT));
                     NetworkHooks.openGui(ctx.getSender(), new INamedContainerProvider() {
                         @Override
                         public ITextComponent getDisplayName() {
@@ -125,6 +125,25 @@ public class CPageChange implements IPacket {
                         return new AuctionListItemContainer(id, inv);
                     }
                 });
+            } break;
+            //Shop
+            case 8: {
+                PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SSyncAuctionNBT(Auctioned.auctionedNBT));
+                if(ctx.getSender().openContainer instanceof ShopHomeContainer) {
+                    ((ShopHomeContainer) ctx.getSender().openContainer).changePage(subpage);
+                } else {
+                    NetworkHooks.openGui(ctx.getSender(), new INamedContainerProvider() {
+                        @Override
+                        public ITextComponent getDisplayName() {
+                            return new TranslationTextComponent("screen.monetamoney.shophome");
+                        }
+
+                        @Override
+                        public Container createMenu(int id, PlayerInventory inv, PlayerEntity player) {
+                            return new ShopHomeContainer(id, inv, subpage);
+                        }
+                    }, buf -> buf.writeInt(this.subpage));
+                }
             } break;
         }
     }
