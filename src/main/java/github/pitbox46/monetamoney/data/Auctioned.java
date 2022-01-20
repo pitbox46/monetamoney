@@ -120,6 +120,19 @@ public class Auctioned {
         return false;
     }
 
+    public static boolean sellToShop(CompoundNBT itemNBT) {
+        try {
+            for (INBT element : (ListNBT) Auctioned.auctionedNBT.get("shop")) {
+                CompoundNBT item = (CompoundNBT) element;
+                if (item.getUniqueId("uuid").equals(itemNBT.getUniqueId("uuid"))) {
+                    item.putInt("stock", item.getInt("stock") + 1);
+                    return true;
+                }
+            }
+        } catch (NullPointerException ignored) {}
+        return false;
+    }
+
     public static int getStock(CompoundNBT itemNBT) {
         try {
             for (INBT element : (ListNBT) Auctioned.auctionedNBT.get("shop")) {

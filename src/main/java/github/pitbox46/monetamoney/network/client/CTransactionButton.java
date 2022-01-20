@@ -1,10 +1,7 @@
 package github.pitbox46.monetamoney.network.client;
 
 import github.pitbox46.monetamoney.ServerEvents;
-import github.pitbox46.monetamoney.containers.vault.AccountTransactionContainer;
-import github.pitbox46.monetamoney.containers.vault.AuctionBuyContainer;
-import github.pitbox46.monetamoney.containers.vault.AuctionListItemContainer;
-import github.pitbox46.monetamoney.containers.vault.ShopBuyContainer;
+import github.pitbox46.monetamoney.containers.vault.*;
 import github.pitbox46.monetamoney.data.*;
 import github.pitbox46.monetamoney.items.Coin;
 import github.pitbox46.monetamoney.network.IPacket;
@@ -115,9 +112,9 @@ public class CTransactionButton implements IPacket {
             }
         }),
         BUY((ctx, packet) -> {
-            if(!(ctx.getSender().openContainer instanceof AuctionBuyContainer) && !(ctx.getSender().openContainer instanceof ShopBuyContainer)) return;
+            if(!(ctx.getSender().openContainer instanceof AbstractBuyContainer)) return;
             String player = ctx.getSender().getGameProfile().getName();
-            ShopBuyContainer container = (ShopBuyContainer) ctx.getSender().openContainer;
+            AbstractBuyContainer container = (AbstractBuyContainer) ctx.getSender().openContainer;
             CompoundNBT itemNBT = container.handler.getStackInSlot(0).getOrCreateTag();
             int price = itemNBT.getInt("price");
             boolean shopItem = price == 0;
@@ -137,10 +134,11 @@ public class CTransactionButton implements IPacket {
 
                 CompoundNBT removedTagNBT = container.handler.getStackInSlot(0).write(new CompoundNBT());
                 removedTagNBT.getCompound("tag").remove("uuid");
-                if(removedTagNBT.getCompound("tag").contains("owner")) {
+                if(container.getClass().equals(AuctionBuyContainer.class)) {
                     removedTagNBT.getCompound("tag").remove("owner");
                     removedTagNBT.getCompound("tag").remove("price");
-                } else {
+                }
+                else if(container.getClass().equals(ShopBuyContainer.class)) {
                     removedTagNBT.getCompound("tag").remove("buyPrice");
                     removedTagNBT.getCompound("tag").remove("sellPrice");
                 }
@@ -212,6 +210,10 @@ public class CTransactionButton implements IPacket {
                 }
             }
             if(quantity >= item.getCount()) {
+                if(!Auctioned.sellToShop(itemNBT)) {
+                    PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SGuiStatusMessage(new TranslationTextComponent("message.monetamoney.error")));
+                    return;
+                }
                 int itemsLeft = item.getCount();
                 for(ItemStack stack : slots) {
                     int maxShrink = Math.min(stack.getCount(), itemsLeft);

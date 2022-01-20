@@ -42,6 +42,7 @@ public class ShopBuyPage extends ContainerScreen<ShopBuyContainer> implements IS
         this.addButton(new ImageTextButton(this.getBackgroundXStart() + 62, this.getBackgroundYStart() + 90, 100, 23, 0, 217, 23, TEXTURE, 256, 263, button -> {
             PacketHandler.CHANNEL.sendToServer(new CTransactionButton(this.container.handler.getStackInSlot(0).getOrCreateTag().getInt("sellPrice"), CTransactionButton.Button.SELL));
             PacketHandler.CHANNEL.sendToServer(new CUpdateBalance(Vault.lastOpenedVault));
+            this.container.stock++;
         }, new TranslationTextComponent("button.monetamoney.sell")));
     }
 
