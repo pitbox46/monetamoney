@@ -37,7 +37,7 @@ public class AuctionBuyPage extends ContainerScreen<AuctionBuyContainer> impleme
         this.editMode = this.container.handler.getStackInSlot(0).getOrCreateTag().getString("owner").equals(this.minecraft.player.getGameProfile().getName());
         if(!editMode) {
             this.addButton(new ImageTextButton(this.getBackgroundXStart() + 62, this.getBackgroundYStart() + 84, 100, 23, 0, 217, 23, TEXTURE, 256, 263, button -> {
-                PacketHandler.CHANNEL.sendToServer(new CTransactionButton(this.container.handler.getStackInSlot(0).getOrCreateTag().getInt("price"), CTransactionButton.Button.BUY));
+                PacketHandler.CHANNEL.sendToServer(new CTransactionButton(this.container.getItemBuyPrice(), CTransactionButton.Button.BUY));
                 PacketHandler.CHANNEL.sendToServer(new CUpdateBalance(Vault.lastOpenedVault));
             }, new TranslationTextComponent("button.monetamoney.buy")));
         } else {
@@ -77,7 +77,7 @@ public class AuctionBuyPage extends ContainerScreen<AuctionBuyContainer> impleme
     protected void drawInfoStrings(MatrixStack matrixStack) {
         if(!this.container.handler.getStackInSlot(0).isEmpty()) {
             drawCenteredString(matrixStack, this.font, new TranslationTextComponent("info.monetamoney.owner", this.container.handler.getStackInSlot(0).getTag().getString("owner")), width / 2, this.getBackgroundYStart() + 45, ColorHelper.PackedColor.packColor(255, 255, 255, 255));
-            drawCenteredString(matrixStack, this.font, new TranslationTextComponent("info.monetamoney.price", this.container.handler.getStackInSlot(0).getTag().getInt("price")), width / 2, this.getBackgroundYStart() + 55, ColorHelper.PackedColor.packColor(255, 255, 255, 255));
+            drawCenteredString(matrixStack, this.font, new TranslationTextComponent("info.monetamoney.price", this.container.getItemBuyPrice()), width / 2, this.getBackgroundYStart() + 55, ColorHelper.PackedColor.packColor(255, 255, 255, 255));
         }
         drawString(matrixStack, this.font, new TranslationTextComponent("info.monetamoney.personalbal", ClientProxy.personalBalance), this.getBackgroundXStart() + 5, this.getBackgroundYStart() + 5, ColorHelper.PackedColor.packColor(255, 255, 255, 255));
     }

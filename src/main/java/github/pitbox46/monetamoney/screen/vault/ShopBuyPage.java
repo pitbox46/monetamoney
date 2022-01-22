@@ -35,14 +35,14 @@ public class ShopBuyPage extends ContainerScreen<ShopBuyContainer> implements IS
     protected void init() {
         super.init();
         this.addButton(new ImageTextButton(this.getBackgroundXStart() + 62, this.getBackgroundYStart() + 66, 100, 23, 0, 217, 23, TEXTURE, 256, 263, button -> {
-            PacketHandler.CHANNEL.sendToServer(new CTransactionButton(this.container.handler.getStackInSlot(0).getOrCreateTag().getInt("buyPrice"), CTransactionButton.Button.BUY));
+            PacketHandler.CHANNEL.sendToServer(new CTransactionButton(this.container.getItemBuyPrice(), CTransactionButton.Button.BUY));
             PacketHandler.CHANNEL.sendToServer(new CUpdateBalance(Vault.lastOpenedVault));
-            if(this.container.stock > 0) this.container.stock--;
+            container.buyItem();
         }, new TranslationTextComponent("button.monetamoney.buy")));
         this.addButton(new ImageTextButton(this.getBackgroundXStart() + 62, this.getBackgroundYStart() + 90, 100, 23, 0, 217, 23, TEXTURE, 256, 263, button -> {
-            PacketHandler.CHANNEL.sendToServer(new CTransactionButton(this.container.handler.getStackInSlot(0).getOrCreateTag().getInt("sellPrice"), CTransactionButton.Button.SELL));
+            PacketHandler.CHANNEL.sendToServer(new CTransactionButton(this.container.getItemSellPrice(), CTransactionButton.Button.SELL));
             PacketHandler.CHANNEL.sendToServer(new CUpdateBalance(Vault.lastOpenedVault));
-            this.container.stock++;
+            container.sellItem();
         }, new TranslationTextComponent("button.monetamoney.sell")));
     }
 
@@ -74,7 +74,7 @@ public class ShopBuyPage extends ContainerScreen<ShopBuyContainer> implements IS
 
     protected void drawInfoStrings(MatrixStack matrixStack) {
         if(!this.container.handler.getStackInSlot(0).isEmpty()) {
-            drawCenteredString(matrixStack, this.font, new TranslationTextComponent("info.monetamoney.buyPrice", this.container.handler.getStackInSlot(0).getTag().getInt("buyPrice")).appendString(" ").appendSibling(new TranslationTextComponent("info.monetamoney.sellPrice", this.container.handler.getStackInSlot(0).getTag().getInt("sellPrice"))), width / 2, this.getBackgroundYStart() + 45, ColorHelper.PackedColor.packColor(255, 255, 255, 255));
+            drawCenteredString(matrixStack, this.font, new TranslationTextComponent("info.monetamoney.buyPrice", this.container.getItemBuyPrice()).appendString(" ").appendSibling(new TranslationTextComponent("info.monetamoney.sellPrice", this.container.getItemSellPrice())), width / 2, this.getBackgroundYStart() + 45, ColorHelper.PackedColor.packColor(255, 255, 255, 255));
             drawCenteredString(matrixStack, this.font, new TranslationTextComponent("info.monetamoney.stock", this.container.stock), width / 2, this.getBackgroundYStart() + 55, ColorHelper.PackedColor.packColor(255, 255, 255, 255));
         }
         drawString(matrixStack, this.font, new TranslationTextComponent("info.monetamoney.personalbal", ClientProxy.personalBalance), this.getBackgroundXStart() + 5, this.getBackgroundYStart() + 5, ColorHelper.PackedColor.packColor(255, 255, 255, 255));

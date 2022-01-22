@@ -24,6 +24,10 @@ public abstract class AbstractBuyContainer extends PlayerInventoryContainer{
         handler.setStackInSlot(0, ItemStack.read(itemNBT));
     }
 
+    public int getItemBuyPrice() {
+        return handler.getStackInSlot(0).getTag().getInt("price");
+    }
+
     @Override
     protected boolean mergeItemStack(ItemStack stack, int startIndex, int endIndex, boolean reverseDirection) {
         if(ItemStack.areItemStacksEqual(stack, handler.getStackInSlot(0))) return false;
