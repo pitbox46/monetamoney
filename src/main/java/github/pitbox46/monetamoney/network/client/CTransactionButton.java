@@ -15,8 +15,8 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fmllegacy.network.NetworkEvent;
-import net.minecraftforge.fmllegacy.network.PacketDistributor;
+import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,7 +78,7 @@ public class CTransactionButton implements IPacket {
     }
 
     public enum Button {
-        DEPOSIT((ctx, packet) -> {
+        WITHDRAW((ctx, packet) -> {
             if (!(ctx.getSender().containerMenu instanceof AccountTransactionContainer)) return;
             String player = ctx.getSender().getGameProfile().getName();
             long balance = Ledger.readBalance(Ledger.jsonFile, player);
@@ -97,7 +97,7 @@ public class CTransactionButton implements IPacket {
                 PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SGuiStatusMessage(new TranslatableComponent("message.monetamoney.nomoney")));
             }
         }),
-        WITHDRAW((ctx, packet) -> {
+        DEPOSIT((ctx, packet) -> {
             if (!(ctx.getSender().containerMenu instanceof AccountTransactionContainer)) return;
             String player = ctx.getSender().getGameProfile().getName();
             AccountTransactionContainer container = (AccountTransactionContainer) ctx.getSender().containerMenu;

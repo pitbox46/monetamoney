@@ -10,7 +10,7 @@ import github.pitbox46.monetamoney.screen.vault.MainPage;
 import github.pitbox46.monetamoney.screen.vault.TeamsPage;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 
 public class ClientProxy extends CommonProxy {
     public static long personalBalance = 0;

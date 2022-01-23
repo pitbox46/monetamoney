@@ -10,12 +10,12 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.common.extensions.IForgeContainerType;
+import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 public class Registration {
     static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MonetaMoney.MODID);
@@ -27,12 +27,12 @@ public class Registration {
     public static final RegistryObject<Item> ANCHOR_ITEM = ITEMS.register("anchor", () -> new BlockItem(ANCHOR_BLOCK.get(), new Item.Properties().tab(MonetaMoney.MOD_TAB)));
     static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, MonetaMoney.MODID);
     static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, MonetaMoney.MODID);
-    public static final RegistryObject<MenuType<AccountTransactionContainer>> ACC_TRANS = CONTAINERS.register("acc_transaction", () -> IForgeContainerType.create((windowId, inv, data) -> new AccountTransactionContainer(windowId, inv)));
-    public static final RegistryObject<MenuType<AuctionHomeContainer>> AUCTION_HOME = CONTAINERS.register("auction_home", () -> IForgeContainerType.create((windowId, inv, data) -> new AuctionHomeContainer(windowId, inv, false, data.readInt())));
-    public static final RegistryObject<MenuType<AuctionBuyContainer>> AUCTION_BUY = CONTAINERS.register("auction_buy", () -> IForgeContainerType.create((windowId, inv, data) -> new AuctionBuyContainer(windowId, inv, data.readNbt())));
-    public static final RegistryObject<MenuType<AuctionListItemContainer>> AUCTION_LIST = CONTAINERS.register("auction_list", () -> IForgeContainerType.create((windowId, inv, data) -> new AuctionListItemContainer(windowId, inv)));
-    public static final RegistryObject<MenuType<ShopHomeContainer>> SHOP_HOME = CONTAINERS.register("shop_home", () -> IForgeContainerType.create((windowId, inv, data) -> new ShopHomeContainer(windowId, inv, data.readInt())));
-    public static final RegistryObject<MenuType<ShopBuyContainer>> SHOP_BUY = CONTAINERS.register("shop_buy", () -> IForgeContainerType.create((windowId, inv, data) -> new ShopBuyContainer(windowId, inv, data.readNbt(), data.readInt())));
+    public static final RegistryObject<MenuType<AccountTransactionContainer>> ACC_TRANS = CONTAINERS.register("acc_transaction", () -> IForgeMenuType.create((windowId, inv, data) -> new AccountTransactionContainer(windowId, inv)));
+    public static final RegistryObject<MenuType<AuctionHomeContainer>> AUCTION_HOME = CONTAINERS.register("auction_home", () -> IForgeMenuType.create((windowId, inv, data) -> new AuctionHomeContainer(windowId, inv, false, data.readInt())));
+    public static final RegistryObject<MenuType<AuctionBuyContainer>> AUCTION_BUY = CONTAINERS.register("auction_buy", () -> IForgeMenuType.create((windowId, inv, data) -> new AuctionBuyContainer(windowId, inv, data.readNbt())));
+    public static final RegistryObject<MenuType<AuctionListItemContainer>> AUCTION_LIST = CONTAINERS.register("auction_list", () -> IForgeMenuType.create((windowId, inv, data) -> new AuctionListItemContainer(windowId, inv)));
+    public static final RegistryObject<MenuType<ShopHomeContainer>> SHOP_HOME = CONTAINERS.register("shop_home", () -> IForgeMenuType.create((windowId, inv, data) -> new ShopHomeContainer(windowId, inv, data.readInt())));
+    public static final RegistryObject<MenuType<ShopBuyContainer>> SHOP_BUY = CONTAINERS.register("shop_buy", () -> IForgeMenuType.create((windowId, inv, data) -> new ShopBuyContainer(windowId, inv, data.readNbt(), data.readInt())));
 
     public static void init() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
