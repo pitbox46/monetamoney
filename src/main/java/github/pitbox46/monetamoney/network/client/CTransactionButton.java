@@ -77,7 +77,7 @@ public class CTransactionButton implements IPacket {
     }
 
     public enum Button {
-        DEPOSIT((ctx, packet) -> {
+        WITHDRAW((ctx, packet) -> {
             if(!(ctx.getSender().openContainer instanceof AccountTransactionContainer)) return;
             String player = ctx.getSender().getGameProfile().getName();
             long balance = Ledger.readBalance(Ledger.jsonFile, player);
@@ -96,7 +96,7 @@ public class CTransactionButton implements IPacket {
                 PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SGuiStatusMessage(new TranslationTextComponent("message.monetamoney.nomoney")));
             }
         }),
-        WITHDRAW((ctx, packet) -> {
+        DEPOSIT((ctx, packet) -> {
             if(!(ctx.getSender().openContainer instanceof AccountTransactionContainer)) return;
             String player = ctx.getSender().getGameProfile().getName();
             AccountTransactionContainer container = (AccountTransactionContainer) ctx.getSender().openContainer;
