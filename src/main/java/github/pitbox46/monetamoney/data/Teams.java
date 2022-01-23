@@ -1,15 +1,16 @@
 package github.pitbox46.monetamoney.data;
 
-import com.google.gson.*;
-import net.minecraft.util.JSONUtils;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import net.minecraft.util.GsonHelper;
 import net.minecraftforge.fml.loading.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class Teams {
@@ -36,7 +37,7 @@ public class Teams {
 
     public static boolean newTeam(File jsonFile, Team team) {
         try (Reader reader = new FileReader(jsonFile)) {
-            JsonObject jsonObject = JSONUtils.fromJson(GSON, reader, JsonObject.class);
+            JsonObject jsonObject = GsonHelper.fromJson(GSON, reader, JsonObject.class);
             assert jsonObject != null;
 
             jsonObject.add(team.toString(), team.toJson());
@@ -51,7 +52,7 @@ public class Teams {
 
     public static boolean removeTeam(File jsonFile, String team) {
         try (Reader reader = new FileReader(jsonFile)) {
-            JsonObject jsonObject = JSONUtils.fromJson(GSON, reader, JsonObject.class);
+            JsonObject jsonObject = GsonHelper.fromJson(GSON, reader, JsonObject.class);
             assert jsonObject != null;
 
             jsonObject.remove(team);
@@ -66,12 +67,12 @@ public class Teams {
 
     public static Team getTeam(File jsonFile, String key) {
         try (Reader reader = new FileReader(jsonFile)) {
-            JsonObject jsonObject = JSONUtils.fromJson(GSON, reader, JsonObject.class);
+            JsonObject jsonObject = GsonHelper.fromJson(GSON, reader, JsonObject.class);
             assert jsonObject != null;
 
             JsonObject teamJson = jsonObject.getAsJsonObject(key);
 
-            if(teamJson != null) {
+            if (teamJson != null) {
                 return Team.fromJson(teamJson);
             }
         } catch (IOException e) {
@@ -82,7 +83,7 @@ public class Teams {
 
     public static void updateTeam(File jsonFile, Team newData) {
         try (Reader reader = new FileReader(jsonFile)) {
-            JsonObject jsonObject = JSONUtils.fromJson(GSON, reader, JsonObject.class);
+            JsonObject jsonObject = GsonHelper.fromJson(GSON, reader, JsonObject.class);
             assert jsonObject != null;
 
             jsonObject.remove(newData.toString());
@@ -102,11 +103,11 @@ public class Teams {
 
     public static Team getPlayersTeam(File jsonFile, String player) {
         try (Reader reader = new FileReader(jsonFile)) {
-            JsonObject jsonObject = JSONUtils.fromJson(GSON, reader, JsonObject.class);
+            JsonObject jsonObject = GsonHelper.fromJson(GSON, reader, JsonObject.class);
             assert jsonObject != null;
 
-            for(Map.Entry<String, JsonElement> entry: jsonObject.entrySet()) {
-                if(Team.fromJson(entry.getValue().getAsJsonObject()).members.contains(player)) {
+            for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+                if (Team.fromJson(entry.getValue().getAsJsonObject()).members.contains(player)) {
                     return Team.fromJson(entry.getValue().getAsJsonObject());
                 }
             }

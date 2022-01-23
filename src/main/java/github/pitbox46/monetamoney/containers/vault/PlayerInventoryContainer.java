@@ -1,19 +1,19 @@
 package github.pitbox46.monetamoney.containers.vault;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
-public abstract class PlayerInventoryContainer extends Container {
-    protected final PlayerEntity playerEntity;
+public abstract class PlayerInventoryContainer extends AbstractContainerMenu {
+    protected final Player playerEntity;
     protected final IItemHandler playerInventory;
 
-    public PlayerInventoryContainer(ContainerType<? extends PlayerInventoryContainer> containerType, int id, PlayerInventory playerInventory, int x, int y) {
+    public PlayerInventoryContainer(MenuType<? extends PlayerInventoryContainer> containerType, int id, Inventory playerInventory, int x, int y) {
         super(containerType, id);
         this.playerEntity = playerInventory.player;
         this.playerInventory = new InvWrapper(playerInventory);
@@ -21,15 +21,15 @@ public abstract class PlayerInventoryContainer extends Container {
     }
 
     @Override
-    public abstract ItemStack transferStackInSlot(PlayerEntity playerIn, int index);
+    public abstract ItemStack quickMoveStack(Player playerIn, int index);
 
     @Override
-    public boolean canInteractWith(PlayerEntity playerIn) {
+    public boolean stillValid(Player playerIn) {
         return true;
     }
 
     protected int addSlotRow(IItemHandler handler, int index, int x, int y, int columns, int dx) {
-        for (int i = 0 ; i < columns ; i++) {
+        for (int i = 0; i < columns; i++) {
             addSlot(new SlotItemHandler(handler, index, x, y));
             x += dx;
             index++;
@@ -38,10 +38,10 @@ public abstract class PlayerInventoryContainer extends Container {
     }
 
     protected int addLockedSlotRow(IItemHandler handler, int index, int x, int y, int columns, int dx) {
-        for (int i = 0 ; i < columns ; i++) {
+        for (int i = 0; i < columns; i++) {
             addSlot(new SlotItemHandler(handler, index, x, y) {
                 @Override
-                public boolean canTakeStack(PlayerEntity playerIn) {
+                public boolean mayPickup(Player playerIn) {
                     return false;
                 }
             });
@@ -52,7 +52,7 @@ public abstract class PlayerInventoryContainer extends Container {
     }
 
     protected int addSlots(IItemHandler handler, int index, int x, int y, int columns, int dx, int rows, int dy) {
-        for (int j = 0 ; j < rows ; j++) {
+        for (int j = 0; j < rows; j++) {
             index = addSlotRow(handler, index, x, y, columns, dx);
             y += dy;
         }
@@ -60,7 +60,7 @@ public abstract class PlayerInventoryContainer extends Container {
     }
 
     protected int addLockedSlots(IItemHandler handler, int index, int x, int y, int columns, int dx, int rows, int dy) {
-        for (int j = 0 ; j < rows ; j++) {
+        for (int j = 0; j < rows; j++) {
             index = addLockedSlotRow(handler, index, x, y, columns, dx);
             y += dy;
         }

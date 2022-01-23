@@ -2,17 +2,14 @@ package github.pitbox46.monetamoney.containers.vault;
 
 import github.pitbox46.monetamoney.network.ClientProxy;
 import github.pitbox46.monetamoney.setup.Registration;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-
-import java.util.ArrayList;
-import java.util.List;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
 
 public class ShopBuyContainer extends AbstractBuyContainer {
     public int stock;
 
-    public ShopBuyContainer(int id, PlayerInventory playerInventory, CompoundNBT itemNBT, int stock) {
+    public ShopBuyContainer(int id, Inventory playerInventory, CompoundTag itemNBT, int stock) {
         super(Registration.SHOP_BUY.get(), id, playerInventory, itemNBT);
         this.stock = stock;
     }
@@ -26,7 +23,7 @@ public class ShopBuyContainer extends AbstractBuyContainer {
     }
 
     public void buyItem() {
-        if(ClientProxy.personalBalance >= getItemBuyPrice() && stock > 0) {
+        if (ClientProxy.personalBalance >= getItemBuyPrice() && stock > 0) {
             stock--;
         }
     }
@@ -34,21 +31,20 @@ public class ShopBuyContainer extends AbstractBuyContainer {
     public void sellItem() {
         //Logic to make sure player has enough items. Only necessary to ensure that the displayed stock is somewhat accurate
         int quantity = 0;
-        PlayerInventory inv = this.playerEntity.inventory;
+        Inventory inv = this.playerEntity.getInventory();
         ItemStack item = handler.getStackInSlot(0);
-        for(int i = 0; i < inv.getSizeInventory(); i++) {
-            if(!inv.getStackInSlot(i).hasTag()) {
-                if (inv.getStackInSlot(i).getItem().equals(item.getItem())) {
-                    quantity += inv.getStackInSlot(i).getCount();
+        for (int i = 0; i < inv.getContainerSize(); i++) {
+            if (!inv.getItem(i).hasTag()) {
+                if (inv.getItem(i).getItem().equals(item.getItem())) {
+                    quantity += inv.getItem(i).getCount();
                 }
-            }
-            else {
-                if (ItemStack.areItemStacksEqual(inv.getStackInSlot(i), item)) {
-                    quantity += inv.getStackInSlot(i).getCount();
+            } else {
+                if (ItemStack.matches(inv.getItem(i), item)) {
+                    quantity += inv.getItem(i).getCount();
                 }
             }
         }
-        if(quantity >= item.getCount()) {
+        if (quantity >= item.getCount()) {
             stock++;
         }
     }

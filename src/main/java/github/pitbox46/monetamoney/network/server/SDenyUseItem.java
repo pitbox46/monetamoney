@@ -2,47 +2,47 @@ package github.pitbox46.monetamoney.network.server;
 
 import github.pitbox46.monetamoney.MonetaMoney;
 import github.pitbox46.monetamoney.network.IPacket;
-import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Hand;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import java.util.function.Function;
 
 public class SDenyUseItem implements IPacket {
-    public Hand hand;
+    public InteractionHand hand;
     public ItemStack item;
 
-    public SDenyUseItem() {}
+    public SDenyUseItem() {
+    }
 
-    public SDenyUseItem(Hand hand, ItemStack item) {
+    public SDenyUseItem(InteractionHand hand, ItemStack item) {
         this.hand = hand;
         this.item = item;
     }
 
-    @Override
-    public void readPacketData(PacketBuffer buf) {
-        this.hand = buf.readEnumValue(Hand.class);
-        this.item = buf.readItemStack();
+    public static Function<FriendlyByteBuf, SDenyUseItem> decoder() {
+        return pb -> {
+            SDenyUseItem packet = new SDenyUseItem();
+            packet.readPacketData(pb);
+            return packet;
+        };
     }
 
     @Override
-    public void writePacketData(PacketBuffer buf) {
-        buf.writeEnumValue(this.hand);
+    public void readPacketData(FriendlyByteBuf buf) {
+        this.hand = buf.readEnum(InteractionHand.class);
+        this.item = buf.readItem();
+    }
+
+    @Override
+    public void writePacketData(FriendlyByteBuf buf) {
+        buf.writeEnum(this.hand);
         buf.writeItemStack(this.item, false);
     }
 
     @Override
     public void processPacket(NetworkEvent.Context ctx) {
         MonetaMoney.PROXY.handleSDenyUseItemPacket(ctx, this);
-    }
-
-    public static Function<PacketBuffer,SDenyUseItem> decoder() {
-        return pb -> {
-            SDenyUseItem packet = new SDenyUseItem();
-            packet.readPacketData(pb);
-            return packet;
-        };
     }
 }

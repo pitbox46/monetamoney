@@ -1,46 +1,53 @@
 package github.pitbox46.monetamoney.screen.vault;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import github.pitbox46.monetamoney.blocks.Vault;
 import github.pitbox46.monetamoney.containers.vault.AuctionListItemContainer;
-import github.pitbox46.monetamoney.network.client.CTransactionButton;
-import github.pitbox46.monetamoney.network.client.CUpdateBalance;
 import github.pitbox46.monetamoney.network.ClientProxy;
 import github.pitbox46.monetamoney.network.PacketHandler;
+import github.pitbox46.monetamoney.network.client.CTransactionButton;
+import github.pitbox46.monetamoney.network.client.CUpdateBalance;
 import github.pitbox46.monetamoney.screen.IStatusable;
 import github.pitbox46.monetamoney.screen.ImageTextButton;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.ColorHelper;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
+import net.minecraft.world.entity.player.Inventory;
 
-public class AuctionListItemPage extends ContainerScreen<AuctionListItemContainer> implements IStatusable {
-    private static final ResourceLocation TEXTURE = new ResourceLocation("monetamoney:textures/gui/changebalance.png");
+public class AuctionListItemPage extends AbstractContainerScreen<AuctionListItemContainer> implements IStatusable {
     protected static final int STATUS_TIMER = 100;
-
-    protected TextFieldWidget input;
-    protected ITextComponent status;
+    private static final ResourceLocation TEXTURE = new ResourceLocation("monetamoney:textures/gui/changebalance.png");
+    protected EditBox input;
+    protected Component status;
     protected long statusStart;
 
-    public AuctionListItemPage(AuctionListItemContainer screenContainer, PlayerInventory inv) {
-        super(screenContainer, inv, new TranslationTextComponent("screen.monetamoney.auctionlist"));
-        this.xSize = 222;
-        this.ySize = 217;
+    public AuctionListItemPage(AuctionListItemContainer screenContainer, Inventory inv) {
+        super(screenContainer, inv, new TranslatableComponent("screen.monetamoney.auctionlist"));
+        this.imageWidth = 222;
+        this.imageHeight = 217;
+    }
+
+    private static int parseInt(String s) throws NumberFormatException {
+        if (s.isEmpty()) return 0;
+
+        int i = Integer.parseInt(s);
+        return Math.max(i, 0);
     }
 
     @Override
     protected void init() {
         super.init();
-        this.input = new TextFieldWidget(this.font, this.getBackgroundXStart() + 66, this.getBackgroundYStart() + 53, 90, 20, StringTextComponent.EMPTY);
-        this.input.setMaxStringLength(9);
-        this.input.setValidator(s -> {
-            if(s.isEmpty()) return true;
+        this.input = new EditBox(this.font, this.getBackgroundXStart() + 66, this.getBackgroundYStart() + 53, 90, 20, TextComponent.EMPTY);
+        this.input.setMaxLength(9);
+        this.input.setFilter(s -> {
+            if (s.isEmpty()) return true;
             try {
                 parseInt(s);
                 return true;
@@ -48,72 +55,74 @@ public class AuctionListItemPage extends ContainerScreen<AuctionListItemContaine
                 return false;
             }
         });
-        this.children.add(this.input);
-        this.addButton(new ImageTextButton(this.getBackgroundXStart() + 62, this.getBackgroundYStart() + 84, 100, 23, 0, 217, 23, TEXTURE, 256, 263, button -> {
-            PacketHandler.CHANNEL.sendToServer(new CTransactionButton(parseInt(this.input.getText()), CTransactionButton.Button.LIST_ITEM));
+        this.addRenderableWidget(this.input);
+        this.addRenderableWidget(new ImageTextButton(this.getBackgroundXStart() + 62, this.getBackgroundYStart() + 84, 100, 23, 0, 217, 23, TEXTURE, 256, 263, button -> {
+            PacketHandler.CHANNEL.sendToServer(new CTransactionButton(parseInt(this.input.getValue()), CTransactionButton.Button.LIST_ITEM));
             PacketHandler.CHANNEL.sendToServer(new CUpdateBalance(Vault.lastOpenedVault));
-        }, new TranslationTextComponent("button.monetamoney.listitem")));
+        }, new TranslatableComponent("button.monetamoney.listitem")));
     }
 
     @Override
     public void resize(Minecraft minecraft, int width, int height) {
-        ITextComponent input = this.input.getMessage();
+        Component input = this.input.getMessage();
         super.resize(minecraft, width, height);
         this.input.setMessage(input);
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         super.render(matrixStack, mouseX, mouseY, partialTicks);
         this.input.render(matrixStack, mouseX, mouseY, partialTicks);
-        this.minecraft.textureManager.bindTexture(TEXTURE);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderTexture(0, TEXTURE);
         RenderSystem.enableBlend();
         this.blit(matrixStack, this.getBackgroundXStart() + 63, this.getBackgroundYStart() + 50, 100, 217, 99, 29, 256, 263);
         /* Balance String */
-        drawString(matrixStack, this.font, new TranslationTextComponent("info.monetamoney.personalbal", ClientProxy.personalBalance), this.getBackgroundXStart() + 5, this.getBackgroundYStart() + 5, ColorHelper.PackedColor.packColor(255, 255, 255, 255));
+        drawString(matrixStack, this.font, new TranslatableComponent("info.monetamoney.personalbal", ClientProxy.personalBalance), this.getBackgroundXStart() + 5, this.getBackgroundYStart() + 5, FastColor.ARGB32.color(255, 255, 255, 255));
 
-        TranslationTextComponent fees = new TranslationTextComponent("info.monetamoney.fees");
-        drawString(matrixStack, this.font, fees, this.getBackgroundXStart() + 5, this.getBackgroundYStart() + 18, ColorHelper.PackedColor.packColor(255, 255, 255, 255));
+        TranslatableComponent fees = new TranslatableComponent("info.monetamoney.fees");
+        drawString(matrixStack, this.font, fees, this.getBackgroundXStart() + 5, this.getBackgroundYStart() + 18, FastColor.ARGB32.color(255, 255, 255, 255));
 
-        TranslationTextComponent listFee = new TranslationTextComponent("info.monetamoney.listfee", ClientProxy.listFee);
-        drawString(matrixStack, this.font, listFee, this.getBackgroundXStart() + 5, this.getBackgroundYStart() + 28, ColorHelper.PackedColor.packColor(255, 255, 255, 255));
+        TranslatableComponent listFee = new TranslatableComponent("info.monetamoney.listfee", ClientProxy.listFee);
+        drawString(matrixStack, this.font, listFee, this.getBackgroundXStart() + 5, this.getBackgroundYStart() + 28, FastColor.ARGB32.color(255, 255, 255, 255));
 
-        TranslationTextComponent dailyFee = new TranslationTextComponent("info.monetamoney.dailylistfee", ClientProxy.dailyListFee);
-        drawString(matrixStack, this.font, dailyFee, this.getBackgroundXStart() + 5, this.getBackgroundYStart() + 38, ColorHelper.PackedColor.packColor(255, 255, 255, 255));
+        TranslatableComponent dailyFee = new TranslatableComponent("info.monetamoney.dailylistfee", ClientProxy.dailyListFee);
+        drawString(matrixStack, this.font, dailyFee, this.getBackgroundXStart() + 5, this.getBackgroundYStart() + 38, FastColor.ARGB32.color(255, 255, 255, 255));
 
         this.renderStatus(matrixStack);
-        this.renderHoveredTooltip(matrixStack, mouseX, mouseY);
+        this.renderTooltip(matrixStack, mouseX, mouseY);
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int x, int y) {
+    protected void renderBg(PoseStack matrixStack, float partialTicks, int x, int y) {
         this.renderBackground(matrixStack);
-        this.minecraft.textureManager.bindTexture(TEXTURE);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderTexture(0, TEXTURE);
         this.blit(matrixStack, this.getBackgroundXStart(), this.getBackgroundYStart(), 0, 0, 222, 217, 256, 263);
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
+    protected void renderLabels(PoseStack matrixStack, int x, int y) {
     }
 
     @Override
-    public void closeScreen() {
-        this.minecraft.displayGuiScreen(new MainPage());
+    public void onClose() {
+        this.minecraft.setScreen(new MainPage());
     }
 
-    protected void renderStatus(MatrixStack matrixStack) {
-        if(status != null && this.minecraft.world.getGameTime() - this.statusStart < STATUS_TIMER - 2) {
-            int alpha = (int) (255 - 255 * (this.minecraft.world.getGameTime() - this.statusStart) / STATUS_TIMER);
-            drawCenteredString(matrixStack, this.font, this.status, width / 2, getBackgroundYStart() + 200, ColorHelper.PackedColor.packColor(alpha, 255, 255, 255));
+    protected void renderStatus(PoseStack matrixStack) {
+        if (status != null && this.minecraft.level.getGameTime() - this.statusStart < STATUS_TIMER - 2) {
+            int alpha = (int) (255 - 255 * (this.minecraft.level.getGameTime() - this.statusStart) / STATUS_TIMER);
+            drawCenteredString(matrixStack, this.font, this.status, width / 2, getBackgroundYStart() + 200, FastColor.ARGB32.color(alpha, 255, 255, 255));
         } else {
             status = null;
             statusStart = 0;
         }
     }
 
-    public void setStatus(ITextComponent message) {
+    public void setStatus(Component message) {
         this.status = message;
-        this.statusStart = this.minecraft.world.getGameTime();
+        this.statusStart = this.minecraft.level.getGameTime();
     }
 
     @Override
@@ -127,12 +136,5 @@ public class AuctionListItemPage extends ContainerScreen<AuctionListItemContaine
 
     private int getBackgroundYStart() {
         return (height - 217) / 2;
-    }
-
-    private static int parseInt(String s) throws NumberFormatException {
-        if(s.isEmpty()) return 0;
-
-        int i = Integer.parseInt(s);
-        return Math.max(i, 0);
     }
 }

@@ -2,43 +2,42 @@ package github.pitbox46.monetamoney.network.server;
 
 import github.pitbox46.monetamoney.MonetaMoney;
 import github.pitbox46.monetamoney.network.IPacket;
-import github.pitbox46.monetamoney.screen.IStatusable;
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import java.util.function.Function;
 
 public class SGuiStatusMessage implements IPacket {
-    public ITextComponent message;
+    public Component message;
 
-    public SGuiStatusMessage() {}
+    public SGuiStatusMessage() {
+    }
 
-    public SGuiStatusMessage(ITextComponent message) {
+    public SGuiStatusMessage(Component message) {
         this.message = message;
     }
 
-    @Override
-    public void readPacketData(PacketBuffer buf) {
-        this.message = buf.readTextComponent();
-    }
-
-    @Override
-    public void writePacketData(PacketBuffer buf) {
-        buf.writeTextComponent(this.message);
-    }
-
-    @Override
-    public void processPacket(NetworkEvent.Context ctx) {
-        MonetaMoney.PROXY.handleSGuiStatusMessage(ctx, this);
-    }
-
-    public static Function<PacketBuffer,SGuiStatusMessage> decoder() {
+    public static Function<FriendlyByteBuf, SGuiStatusMessage> decoder() {
         return pb -> {
             SGuiStatusMessage packet = new SGuiStatusMessage();
             packet.readPacketData(pb);
             return packet;
         };
+    }
+
+    @Override
+    public void readPacketData(FriendlyByteBuf buf) {
+        this.message = buf.readComponent();
+    }
+
+    @Override
+    public void writePacketData(FriendlyByteBuf buf) {
+        buf.writeComponent(this.message);
+    }
+
+    @Override
+    public void processPacket(NetworkEvent.Context ctx) {
+        MonetaMoney.PROXY.handleSGuiStatusMessage(ctx, this);
     }
 }

@@ -8,12 +8,12 @@ import github.pitbox46.monetamoney.items.Coin;
 import github.pitbox46.monetamoney.network.IPacket;
 import github.pitbox46.monetamoney.network.PacketHandler;
 import github.pitbox46.monetamoney.network.server.SGuiStatusMessage;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.fmllegacy.network.PacketDistributor;
 
 import java.util.function.Function;
 
@@ -22,7 +22,8 @@ public class CTeamTransactionButton implements IPacket {
     public int amount;
     public Button button;
 
-    public CTeamTransactionButton() {}
+    public CTeamTransactionButton() {
+    }
 
     public CTeamTransactionButton(BlockPos pos, int amount, Button button) {
         this.pos = pos;
@@ -30,72 +31,71 @@ public class CTeamTransactionButton implements IPacket {
         this.button = button;
     }
 
-    @Override
-    public void readPacketData(PacketBuffer buf) {
-        this.pos = buf.readBlockPos();
-        this.amount = buf.readInt();
-        this.button = buf.readEnumValue(Button.class);
+    public static Function<FriendlyByteBuf, CTeamTransactionButton> decoder() {
+        return pb -> {
+            CTeamTransactionButton packet = new CTeamTransactionButton();
+            packet.readPacketData(pb);
+            return packet;
+        };
     }
 
     @Override
-    public void writePacketData(PacketBuffer buf) {
+    public void readPacketData(FriendlyByteBuf buf) {
+        this.pos = buf.readBlockPos();
+        this.amount = buf.readInt();
+        this.button = buf.readEnum(Button.class);
+    }
+
+    @Override
+    public void writePacketData(FriendlyByteBuf buf) {
         buf.writeBlockPos(this.pos);
         buf.writeInt(this.amount);
-        buf.writeEnumValue(this.button);
+        buf.writeEnum(this.button);
     }
 
     @Override
     public void processPacket(NetworkEvent.Context ctx) {
-        if(ctx.getSender() != null) {
-            if (ctx.getSender().openContainer instanceof AccountTransactionContainer) {
-                AccountTransactionContainer container = (AccountTransactionContainer) ctx.getSender().openContainer;
-                Team team = Teams.getTeam(Teams.jsonFile, ctx.getSender().getServerWorld().getDimensionKey().getLocation().toString() + this.pos.toLong());
-                if(team.isNull()) {
-                    PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SGuiStatusMessage(new TranslationTextComponent("message.monetamoney.noteam")));
+        if (ctx.getSender() != null) {
+            if (ctx.getSender().containerMenu instanceof AccountTransactionContainer) {
+                AccountTransactionContainer container = (AccountTransactionContainer) ctx.getSender().containerMenu;
+                Team team = Teams.getTeam(Teams.jsonFile, ctx.getSender().getLevel().dimension().location().toString() + this.pos.asLong());
+                if (team.isNull()) {
+                    PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SGuiStatusMessage(new TranslatableComponent("message.monetamoney.noteam")));
                     return;
                 }
-                if(team.members.contains(ctx.getSender().getGameProfile().getName())) {
-                    if(this.button == CTeamTransactionButton.Button.WITHDRAW) {
+                if (team.members.contains(ctx.getSender().getGameProfile().getName())) {
+                    if (this.button == CTeamTransactionButton.Button.WITHDRAW) {
                         if (this.amount > Coin.MAX_SIZE || this.amount <= 0) {
-                            PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SGuiStatusMessage(new TranslationTextComponent("message.monetamoney.invalidsize")));
+                            PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SGuiStatusMessage(new TranslatableComponent("message.monetamoney.invalidsize")));
                         } else if (team.balance >= this.amount) {
                             team.balance -= this.amount;
                             ItemStack coins = Coin.createCoin(this.amount, Outstanding.newCoin(Outstanding.jsonFile, this.amount, ctx.getSender().getGameProfile().getName()));
                             if (container.handler.getStackInSlot(0).isEmpty()) {
                                 container.handler.setStackInSlot(0, coins);
                             } else {
-                                ctx.getSender().inventory.placeItemBackInInventory(ctx.getSender().getEntityWorld(), coins);
+                                ctx.getSender().getInventory().placeItemBackInInventory(coins);
                             }
                         } else {
-                            PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SGuiStatusMessage(new TranslationTextComponent("message.monetamoney.nomoney")));
+                            PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SGuiStatusMessage(new TranslatableComponent("message.monetamoney.nomoney")));
                         }
-                    }
-                    else if (this.button == CTeamTransactionButton.Button.DEPOSIT) {
+                    } else if (this.button == CTeamTransactionButton.Button.DEPOSIT) {
                         if (container.handler.getStackInSlot(0).getItem() instanceof Coin) {
                             ItemStack coins = container.handler.getStackInSlot(0);
-                            if (coins.getOrCreateTag().hasUniqueId("uuid") && Outstanding.redeemTeamCoin(Outstanding.jsonFile, team, coins.getOrCreateTag().getUniqueId("uuid"))) {
+                            if (coins.getOrCreateTag().hasUUID("uuid") && Outstanding.redeemTeamCoin(Outstanding.jsonFile, team, coins.getOrCreateTag().getUUID("uuid"))) {
                                 container.handler.setStackInSlot(0, ItemStack.EMPTY);
                             } else {
-                                PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SGuiStatusMessage(new TranslationTextComponent("message.monetamoney.invalidcoin")));
+                                PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SGuiStatusMessage(new TranslatableComponent("message.monetamoney.invalidcoin")));
                             }
                         } else {
-                            PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SGuiStatusMessage(new TranslationTextComponent("message.monetamoney.invaliditem")));
+                            PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SGuiStatusMessage(new TranslatableComponent("message.monetamoney.invaliditem")));
                         }
                     }
                     Teams.updateTeam(Teams.jsonFile, team);
                 } else {
-                    PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SGuiStatusMessage(new TranslationTextComponent("message.monetamoney.noaccess")));
+                    PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(ctx::getSender), new SGuiStatusMessage(new TranslatableComponent("message.monetamoney.noaccess")));
                 }
             }
         }
-    }
-
-    public static Function<PacketBuffer, CTeamTransactionButton> decoder() {
-        return pb -> {
-            CTeamTransactionButton packet = new CTeamTransactionButton();
-            packet.readPacketData(pb);
-            return packet;
-        };
     }
 
     public enum Button {

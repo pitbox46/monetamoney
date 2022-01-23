@@ -1,12 +1,12 @@
 package github.pitbox46.monetamoney.network;
 
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 public interface IPacket {
-    void readPacketData(PacketBuffer buf);
+    void readPacketData(FriendlyByteBuf buf);
 
-    void writePacketData(PacketBuffer buf);
+    void writePacketData(FriendlyByteBuf buf);
 
     void processPacket(NetworkEvent.Context ctx);
 }

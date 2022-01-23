@@ -39,19 +39,19 @@ public class Config {
         BASE_CHUNKLOADER = SERVER_BUILDER.comment("Base chunk loader cost per 24 hours")
                 .defineInRange("base_chunkloader", 100, 0, Long.MAX_VALUE);
         MULTIPLIER_CHUNKLOADER = SERVER_BUILDER.comment("The amount that chunk loader cost scales by. " +
-                "The cost for a new loader is this multiplier multiplied by the previous cost")
+                        "The cost for a new loader is this multiplier multiplied by the previous cost")
                 .defineInRange("multi_chunkloader", 1.1d, 0, Double.MAX_VALUE);
         OVERDRAFT_FEE = SERVER_BUILDER.comment("If a chunk for some reason is still force loaded when a team has no money, an overdraft fee is incurred")
                 .defineInRange("overdraft_fee", 100, 0, Long.MAX_VALUE);
         LIST_FEE = SERVER_BUILDER.comment("Fee incurred for listing an item")
                 .defineInRange("list_fee", 100, 0, Long.MAX_VALUE);
         MULTIPILER_LIST = SERVER_BUILDER.comment("The amount that initial listing fee cost scales by. " +
-                "The cost for a listing is this multiplier multiplied by the previous cost")
+                        "The cost for a listing is this multiplier multiplied by the previous cost")
                 .defineInRange("multi_chunkloader", 1.1d, 0, Double.MAX_VALUE);
         DAILY_LIST_FEE = SERVER_BUILDER.comment("Fee incurred for listing an item")
                 .defineInRange("daily_list_fee", 100, 0, Long.MAX_VALUE);
         MULTIPILER_DAILY_LIST = SERVER_BUILDER.comment("The amount that daily listing fee cost scales by. " +
-                "The cost for the daily listing fee is this multiplier multiplied by the previous cost")
+                        "The cost for the daily listing fee is this multiplier multiplied by the previous cost")
                 .defineInRange("multi_chunkloader", 1.1d, 0, Double.MAX_VALUE);
         RESTOCK_TIME = SERVER_BUILDER.comment("Time in between shop restocks in MINUTES")
                 .defineInRange("restock_time", 60 * 24, 1, Long.MAX_VALUE);

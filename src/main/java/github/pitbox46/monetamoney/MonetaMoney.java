@@ -5,8 +5,8 @@ import github.pitbox46.monetamoney.network.ClientProxy;
 import github.pitbox46.monetamoney.network.CommonProxy;
 import github.pitbox46.monetamoney.setup.ClientSetup;
 import github.pitbox46.monetamoney.setup.Registration;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -23,8 +23,8 @@ public class MonetaMoney {
     public static final Logger LOGGER = LogManager.getLogger();
 
     public static final String MODID = "monetamoney";
-    public static ItemGroup MOD_TAB = new ItemGroup("monetamoney") {
-        public ItemStack createIcon() {
+    public static CreativeModeTab MOD_TAB = new CreativeModeTab("monetamoney") {
+        public ItemStack makeIcon() {
             return new ItemStack(Registration.COIN.get());
         }
     };

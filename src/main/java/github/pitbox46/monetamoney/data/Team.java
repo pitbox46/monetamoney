@@ -2,9 +2,9 @@ package github.pitbox46.monetamoney.data;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +28,27 @@ public class Team {
         this.locked = locked;
     }
 
+    public static Team fromJson(JsonObject jsonObject) {
+        JsonArray array = jsonObject.getAsJsonArray("members");
+        List<String> members = new ArrayList<>();
+        array.forEach(m -> members.add(m.getAsString()));
+        return new Team(BlockPos.of(jsonObject.getAsJsonPrimitive("pos").getAsLong()), new ResourceLocation(jsonObject.getAsJsonPrimitive("dimension").getAsString()), jsonObject.getAsJsonPrimitive("leader").getAsString(), members, jsonObject.getAsJsonPrimitive("balance").getAsLong(), jsonObject.getAsJsonPrimitive("locked").getAsBoolean());
+    }
+
+    public static Team readTeam(FriendlyByteBuf pb) {
+        BlockPos pos = pb.readBlockPos();
+        ResourceLocation dim = pb.readResourceLocation();
+        String leader = pb.readUtf();
+        List<String> members = new ArrayList<>();
+        for (int i = pb.readInt(); i > 0; i--) {
+            members.add(pb.readUtf());
+        }
+        return new Team(pos, dim, leader, members, pb.readLong(), pb.readBoolean());
+    }
+
     public JsonObject toJson() {
         JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("pos", pos.toLong());
+        jsonObject.addProperty("pos", pos.asLong());
         jsonObject.addProperty("dimension", dim.toString());
         jsonObject.addProperty("leader", leader);
         JsonArray memberList = new JsonArray();
@@ -41,35 +59,17 @@ public class Team {
         return jsonObject;
     }
 
-    public static Team fromJson(JsonObject jsonObject) {
-        JsonArray array = jsonObject.getAsJsonArray("members");
-        List<String> members = new ArrayList<>();
-        array.forEach(m -> members.add(m.getAsString()));
-        return new Team(BlockPos.fromLong(jsonObject.getAsJsonPrimitive("pos").getAsLong()), new ResourceLocation(jsonObject.getAsJsonPrimitive("dimension").getAsString()), jsonObject.getAsJsonPrimitive("leader").getAsString(), members, jsonObject.getAsJsonPrimitive("balance").getAsLong(), jsonObject.getAsJsonPrimitive("locked").getAsBoolean());
-    }
-
-    public PacketBuffer writeTeam(PacketBuffer pb) {
+    public FriendlyByteBuf writeTeam(FriendlyByteBuf pb) {
         pb.writeBlockPos(this.pos);
         pb.writeResourceLocation(this.dim);
-        pb.writeString(this.leader);
+        pb.writeUtf(this.leader);
         pb.writeInt(this.members.size());
         for (String member : this.members) {
-            pb.writeString(member);
+            pb.writeUtf(member);
         }
         pb.writeLong(this.balance);
         pb.writeBoolean(this.locked);
         return pb;
-    }
-
-    public static Team readTeam(PacketBuffer pb) {
-        BlockPos pos = pb.readBlockPos();
-        ResourceLocation dim = pb.readResourceLocation();
-        String leader = pb.readString();
-        List<String> members = new ArrayList<>();
-        for(int i = pb.readInt(); i > 0; i--) {
-            members.add(pb.readString());
-        }
-        return new Team(pos, dim, leader, members, pb.readLong(), pb.readBoolean());
     }
 
     public boolean isNull() {
@@ -78,14 +78,14 @@ public class Team {
 
     @Override
     public String toString() {
-        return dim.toString() + pos.toLong();
+        return dim.toString() + pos.asLong();
     }
 
     @Override
     public boolean equals(Object obj) {
-        if(obj.getClass() == Team.class) {
+        if (obj.getClass() == Team.class) {
             Team team = (Team) obj;
-            if(team.pos.equals(this.pos) && team.leader.equals(this.leader) && team.members.equals(this.members) && team.balance == this.balance) {
+            if (team.pos.equals(this.pos) && team.leader.equals(this.leader) && team.members.equals(this.members) && team.balance == this.balance) {
                 return true;
             }
         }

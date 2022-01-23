@@ -1,10 +1,9 @@
 package github.pitbox46.monetamoney.data;
 
 import com.google.gson.JsonObject;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Arrays;
 
@@ -21,34 +20,34 @@ public class ChunkLoader {
         this.status = status;
     }
 
-    public JsonObject toJson() {
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("pos", pos.toLong());
-        jsonObject.addProperty("dimension", dimensionKey.toString());
-        jsonObject.addProperty("owner", owner);
-        jsonObject.addProperty("status", status.name);
-        return jsonObject;
-    }
-
     public static ChunkLoader fromJson(JsonObject jsonObject) {
         ResourceLocation dim = new ResourceLocation(jsonObject.getAsJsonObject().get("dimension").getAsString());
         long pos = jsonObject.getAsJsonObject().get("pos").getAsLong();
         String owner = jsonObject.getAsJsonObject().get("owner").getAsString();
         Status status = Status.getStatus(jsonObject.getAsJsonObject().get("status").getAsString());
 
-        return new ChunkLoader(dim, BlockPos.fromLong(pos), owner, status);
+        return new ChunkLoader(dim, BlockPos.of(pos), owner, status);
     }
 
-    public PacketBuffer writeChunk(PacketBuffer pb) {
+    public static ChunkLoader readChunk(FriendlyByteBuf pb) {
+        return new ChunkLoader(pb.readResourceLocation(), BlockPos.of(pb.readLong()), pb.readUtf(), Status.getStatus(pb.readUtf()));
+    }
+
+    public JsonObject toJson() {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("pos", pos.asLong());
+        jsonObject.addProperty("dimension", dimensionKey.toString());
+        jsonObject.addProperty("owner", owner);
+        jsonObject.addProperty("status", status.name);
+        return jsonObject;
+    }
+
+    public FriendlyByteBuf writeChunk(FriendlyByteBuf pb) {
         pb.writeResourceLocation(this.dimensionKey);
-        pb.writeLong(this.pos.toLong());
-        pb.writeString(this.owner);
-        pb.writeString(this.status.name);
+        pb.writeLong(this.pos.asLong());
+        pb.writeUtf(this.owner);
+        pb.writeUtf(this.status.name);
         return pb;
-    }
-
-    public static ChunkLoader readChunk(PacketBuffer pb) {
-        return new ChunkLoader(pb.readResourceLocation(), BlockPos.fromLong(pb.readLong()), pb.readString(), Status.getStatus(pb.readString()));
     }
 
     public enum Status {
@@ -57,6 +56,7 @@ public class ChunkLoader {
         STUCK("stuck");
 
         public String name;
+
         Status(String name) {
             this.name = name;
         }

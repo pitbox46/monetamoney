@@ -7,35 +7,35 @@ import github.pitbox46.monetamoney.data.Teams;
 import github.pitbox46.monetamoney.network.PacketHandler;
 import github.pitbox46.monetamoney.network.server.SOpenAnchorPage;
 import github.pitbox46.monetamoney.utils.BlockUtils;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraft.block.material.PushReaction;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.state.EnumProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.level.material.PushReaction;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.fmllegacy.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 
-import static net.minecraft.state.properties.BlockStateProperties.FACING;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
 
 public class Anchor extends Block implements IOnBreak {
     public static final VoxelShape NORTH_SHAPE = createRotatedShape(Direction.NORTH);
@@ -48,94 +48,21 @@ public class Anchor extends Block implements IOnBreak {
     public static BlockPos lastOpenedAnchor;
 
     public Anchor() {
-        super(AbstractBlock.Properties
-                .create(Material.IRON, MaterialColor.IRON)
-                .setRequiresTool()
-                .hardnessAndResistance(5.0F, 6.0F)
+        super(BlockBehaviour.Properties
+                .of(Material.METAL, MaterialColor.METAL)
+                .requiresCorrectToolForDrops()
+                .strength(5.0F, 6.0F)
                 .sound(SoundType.METAL)
-                .notSolid()
+                .noOcclusion()
         );
-        this.setDefaultState(this.getStateContainer().getBaseState()
-                .with(FACING, Direction.NORTH)
-                .with(STATUS, Status.OFF)
+        this.registerDefaultState(this.getStateDefinition().any()
+                .setValue(FACING, Direction.NORTH)
+                .setValue(STATUS, Status.OFF)
         );
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
-        if(!worldIn.isRemote()) {
-            Team team = Teams.getPlayersTeam(Teams.jsonFile, player.getGameProfile().getName());
-            String teamKey = team.isNull() ? "unlisted" : team.toString();
-            ServerEvents.CHUNK_MAP.putIfAbsent(teamKey, new ArrayList<>());
-
-            boolean flag = false;
-            for (ChunkLoader chunkLoader : ServerEvents.CHUNK_MAP.get(teamKey)) {
-                if (worldIn.getDimensionKey().getLocation().equals(chunkLoader.dimensionKey) && chunkLoader.pos.equals(pos)) {
-                    flag = true;
-                    PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new SOpenAnchorPage(chunkLoader.status == ChunkLoader.Status.ON));
-                    break;
-                }
-            }
-            if(!flag) {
-                ServerEvents.CHUNK_MAP.get(teamKey).add(new ChunkLoader(worldIn.getDimensionKey().getLocation(), pos, player.getGameProfile().getName(), ChunkLoader.Status.OFF));
-                PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new SOpenAnchorPage(false));
-            }
-        } else {
-            lastOpenedAnchor = pos;
-        }
-        return ActionResultType.SUCCESS;
-    }
-
-    @Override
-    public void onBlockBreak(World world, BlockPos pos) {
-        if(!world.isRemote()) {
-            ServerEvents.CHUNK_MAP.values().forEach(list ->
-                    list.removeIf(chunk -> world.getDimensionKey().getLocation().equals(chunk.dimensionKey) && chunk.pos.equals(pos))
-            );
-        }
-    }
-
-    @Override
-    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-        switch (state.get(FACING)) {
-            case NORTH:
-                return NORTH_SHAPE;
-            case EAST:
-                return EAST_SHAPE;
-            case SOUTH:
-                return SOUTH_SHAPE;
-            case WEST:
-                return WEST_SHAPE;
-        }
-        return NORTH_SHAPE;
-    }
-
-    @Override
-    public boolean isTransparent(BlockState state) {
-        return true;
-    }
-
-    @Override
-    public PushReaction getPushReaction(BlockState state) {
-        return PushReaction.BLOCK;
-    }
-
-    @Nullable
-    @Override
-    public BlockState getStateForPlacement(BlockItemUseContext context) {
-        BlockState blockState = super.getStateForPlacement(context);
-        assert blockState != null;
-        return blockState.with(FACING, context.getPlacementHorizontalFacing().rotateY());
-    }
-
-    @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        builder.add(FACING).add(STATUS);
     }
 
     private static VoxelShape createRotatedShape(Direction direction) {
-        return VoxelShapes.or(
+        return Shapes.or(
                 BlockUtils.cuboidWithRotation(direction, 5, 1, 6, 6, 13, 10),
                 BlockUtils.cuboidWithRotation(direction, 4, 0, 4, 12, 1, 12),
                 BlockUtils.cuboidWithRotation(direction, 4, 13, 4, 12, 14, 12),
@@ -158,21 +85,95 @@ public class Anchor extends Block implements IOnBreak {
                 BlockUtils.cuboidWithRotation(direction, 6, 1, 5, 10, 13, 11),
                 BlockUtils.cuboidWithRotation(direction, 10, 1, 6, 11, 13, 10),
                 BlockUtils.cuboidWithRotation(direction, 6, 14, 0, 10, 32, 16)
-        ).simplify();
+        ).optimize();
     }
 
-    public enum Status implements IStringSerializable {
+    @SuppressWarnings("deprecation")
+    @Override
+    public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
+        if (!worldIn.isClientSide()) {
+            Team team = Teams.getPlayersTeam(Teams.jsonFile, player.getGameProfile().getName());
+            String teamKey = team.isNull() ? "unlisted" : team.toString();
+            ServerEvents.CHUNK_MAP.putIfAbsent(teamKey, new ArrayList<>());
+
+            boolean flag = false;
+            for (ChunkLoader chunkLoader : ServerEvents.CHUNK_MAP.get(teamKey)) {
+                if (worldIn.dimension().location().equals(chunkLoader.dimensionKey) && chunkLoader.pos.equals(pos)) {
+                    flag = true;
+                    PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), new SOpenAnchorPage(chunkLoader.status == ChunkLoader.Status.ON));
+                    break;
+                }
+            }
+            if (!flag) {
+                ServerEvents.CHUNK_MAP.get(teamKey).add(new ChunkLoader(worldIn.dimension().location(), pos, player.getGameProfile().getName(), ChunkLoader.Status.OFF));
+                PacketHandler.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), new SOpenAnchorPage(false));
+            }
+        } else {
+            lastOpenedAnchor = pos;
+        }
+        return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public void onBlockBreak(Level world, BlockPos pos) {
+        if (!world.isClientSide()) {
+            ServerEvents.CHUNK_MAP.values().forEach(list ->
+                    list.removeIf(chunk -> world.dimension().location().equals(chunk.dimensionKey) && chunk.pos.equals(pos))
+            );
+        }
+    }
+
+    @Override
+    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
+        switch (state.getValue(FACING)) {
+            case NORTH:
+                return NORTH_SHAPE;
+            case EAST:
+                return EAST_SHAPE;
+            case SOUTH:
+                return SOUTH_SHAPE;
+            case WEST:
+                return WEST_SHAPE;
+        }
+        return NORTH_SHAPE;
+    }
+
+    @Override
+    public boolean useShapeForLightOcclusion(BlockState state) {
+        return true;
+    }
+
+    @Override
+    public PushReaction getPistonPushReaction(BlockState state) {
+        return PushReaction.BLOCK;
+    }
+
+    @Nullable
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        BlockState blockState = super.getStateForPlacement(context);
+        assert blockState != null;
+        return blockState.setValue(FACING, context.getHorizontalDirection().getClockWise());
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(FACING).add(STATUS);
+    }
+
+    public enum Status implements StringRepresentable {
         OFF("off"),
         ON("on"),
         STUCK("stuck");
 
         public final String name;
+
         Status(String name) {
             this.name = name;
         }
 
         @Override
-        public String getString() {
+        public String getSerializedName() {
             return name;
         }
     }

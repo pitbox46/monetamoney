@@ -1,52 +1,49 @@
 package github.pitbox46.monetamoney.containers.vault;
 
 import github.pitbox46.monetamoney.setup.Registration;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class AuctionListItemContainer extends PlayerInventoryContainer {
     public ItemStackHandler handler = new ItemStackHandler();
 
-    public AuctionListItemContainer(int id, PlayerInventory playerInventory) {
+    public AuctionListItemContainer(int id, Inventory playerInventory) {
         super(Registration.AUCTION_LIST.get(), id, playerInventory, 31, 117);
         this.addSlot(new SlotItemHandler(handler, 0, 103, 21));
     }
 
     @Override
-    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
+    public ItemStack quickMoveStack(Player playerIn, int index) {
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = this.getSlot(index);
-        if (slot != null && slot.getHasStack()) {
-            ItemStack stack = slot.getStack();
+        if (slot != null && slot.hasItem()) {
+            ItemStack stack = slot.getItem();
             itemstack = stack.copy();
             if (index == 36) {
-                if (!this.mergeItemStack(stack, 0, 36, false)) {
+                if (!this.moveItemStackTo(stack, 0, 36, false)) {
                     return ItemStack.EMPTY;
                 }
-                slot.onSlotChange(stack, itemstack);
-            }
-            else if (this.mergeItemStack(stack, 36, 37, false)) {
+                slot.onQuickCraft(stack, itemstack);
+            } else if (this.moveItemStackTo(stack, 36, 37, false)) {
                 return ItemStack.EMPTY;
-            }
-            else if (index < 27) {
-                if (!this.mergeItemStack(itemstack, 27, 36, false)) {
+            } else if (index < 27) {
+                if (!this.moveItemStackTo(itemstack, 27, 36, false)) {
                     return ItemStack.EMPTY;
                 }
-            }
-            else if (index < 36) {
-                if (!this.mergeItemStack(itemstack, 0, 27, false)) {
+            } else if (index < 36) {
+                if (!this.moveItemStackTo(itemstack, 0, 27, false)) {
                     return ItemStack.EMPTY;
                 }
             }
 
             if (stack.isEmpty()) {
-                slot.putStack(ItemStack.EMPTY);
+                slot.set(ItemStack.EMPTY);
             } else {
-                slot.onSlotChanged();
+                slot.setChanged();
             }
 
             if (stack.getCount() == itemstack.getCount()) {

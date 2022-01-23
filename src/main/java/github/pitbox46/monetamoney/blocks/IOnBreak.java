@@ -1,8 +1,8 @@
 package github.pitbox46.monetamoney.blocks;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 public interface IOnBreak {
-    void onBlockBreak(World world, BlockPos pos);
+    void onBlockBreak(Level world, BlockPos pos);
 }

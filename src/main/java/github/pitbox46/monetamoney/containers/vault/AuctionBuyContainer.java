@@ -1,22 +1,18 @@
 package github.pitbox46.monetamoney.containers.vault;
 
 import github.pitbox46.monetamoney.setup.Registration;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.SlotItemHandler;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
 
 public class AuctionBuyContainer extends AbstractBuyContainer {
-    public AuctionBuyContainer(int id, PlayerInventory playerInventory, CompoundNBT itemNBT) {
+    public AuctionBuyContainer(int id, Inventory playerInventory, CompoundTag itemNBT) {
         super(Registration.AUCTION_BUY.get(), id, playerInventory, itemNBT);
     }
 
     @Override
-    protected boolean mergeItemStack(ItemStack stack, int startIndex, int endIndex, boolean reverseDirection) {
-        if(ItemStack.areItemStacksEqual(stack, handler.getStackInSlot(0))) return false;
-        return super.mergeItemStack(stack, startIndex, endIndex, reverseDirection);
+    protected boolean moveItemStackTo(ItemStack stack, int startIndex, int endIndex, boolean reverseDirection) {
+        if (ItemStack.matches(stack, handler.getStackInSlot(0))) return false;
+        return super.moveItemStackTo(stack, startIndex, endIndex, reverseDirection);
     }
 }

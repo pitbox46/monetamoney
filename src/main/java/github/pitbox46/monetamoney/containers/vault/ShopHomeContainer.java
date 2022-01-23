@@ -2,17 +2,16 @@ package github.pitbox46.monetamoney.containers.vault;
 
 import github.pitbox46.monetamoney.data.Auctioned;
 import github.pitbox46.monetamoney.setup.Registration;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class ShopHomeContainer extends PlayerInventoryContainer {
@@ -24,7 +23,7 @@ public class ShopHomeContainer extends PlayerInventoryContainer {
 
     public int pageNumber;
 
-    public ShopHomeContainer(int id, PlayerInventory playerInventory, int page) {
+    public ShopHomeContainer(int id, Inventory playerInventory, int page) {
         super(Registration.SHOP_HOME.get(), id, playerInventory, 31, 173);
 
         this.changePage(page);
@@ -36,22 +35,22 @@ public class ShopHomeContainer extends PlayerInventoryContainer {
         this.pageNumber = pageNumber;
 
         List<ItemStackHandler> pages = new ArrayList<>();
-        if(Auctioned.auctionedNBT.get("shop") instanceof ListNBT) {
-            ListNBT totalItems = new ListNBT();
-            ListNBT shop = (ListNBT) Auctioned.auctionedNBT.get("shop");
+        if (Auctioned.auctionedNBT.get("shop") instanceof ListTag) {
+            ListTag totalItems = new ListTag();
+            ListTag shop = (ListTag) Auctioned.auctionedNBT.get("shop");
 
             totalItems.addAll(shop);
 
             NonNullList<ItemStack> items = NonNullList.withSize(SLOTS, ItemStack.EMPTY);
 
             for (int i = 0, itemsAdded = 0; i < totalItems.size(); i++) {
-                if(i % SLOTS == 0 && i != 0) {
+                if (i % SLOTS == 0 && i != 0) {
                     pages.add(new ItemStackHandler(items));
                     items = NonNullList.withSize(SLOTS, ItemStack.EMPTY);
                 }
-                CompoundNBT compoundNBT = (CompoundNBT) totalItems.get(i);
-                ItemStack itemStack = ItemStack.read(compoundNBT);
-                itemStack.getOrCreateTag().putUniqueId("uuid", compoundNBT.getUniqueId("uuid"));
+                CompoundTag compoundNBT = (CompoundTag) totalItems.get(i);
+                ItemStack itemStack = ItemStack.of(compoundNBT);
+                itemStack.getOrCreateTag().putUUID("uuid", compoundNBT.getUUID("uuid"));
                 itemStack.getTag().putInt("buyPrice", compoundNBT.getInt("buyPrice"));
                 itemStack.getTag().putInt("sellPrice", compoundNBT.getInt("sellPrice"));
                 items.set(itemsAdded % SLOTS, itemStack);
@@ -61,31 +60,31 @@ public class ShopHomeContainer extends PlayerInventoryContainer {
             PAGES.addAll(pages);
             pages.add(new ItemStackHandler(items));
         }
-        if(pages.size() <= this.pageNumber) {
+        if (pages.size() <= this.pageNumber) {
             this.pageNumber = pages.size() - 1;
         }
-        for(int i = 0; i < SLOTS; i++) {
+        for (int i = 0; i < SLOTS; i++) {
             this.currentPage.setStackInSlot(i, pages.get(this.pageNumber).getStackInSlot(i));
         }
     }
 
     @Override
-    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
+    public ItemStack quickMoveStack(Player playerIn, int index) {
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = this.getSlot(index);
-        if (slot != null && slot.getHasStack()) {
-            ItemStack stack = slot.getStack();
+        if (slot != null && slot.hasItem()) {
+            ItemStack stack = slot.getItem();
             itemstack = stack.copy();
             if (index > 35) {
                 return ItemStack.EMPTY;
-            } else if (!this.mergeItemStack(stack, 35, 0, true)) {
+            } else if (!this.moveItemStackTo(stack, 35, 0, true)) {
                 return ItemStack.EMPTY;
             }
 
             if (stack.isEmpty()) {
-                slot.putStack(ItemStack.EMPTY);
+                slot.set(ItemStack.EMPTY);
             } else {
-                slot.onSlotChanged();
+                slot.setChanged();
             }
 
             if (stack.getCount() == itemstack.getCount()) {
