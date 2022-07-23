@@ -25,41 +25,26 @@ public class AccountTransactionContainer extends PlayerInventoryContainer {
 
     @Override
     public ItemStack quickMoveStack(Player playerIn, int index) {
-        ItemStack itemstack = ItemStack.EMPTY;
+        ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = this.getSlot(index);
         if (slot != null && slot.hasItem()) {
             ItemStack stack = slot.getItem();
-            itemstack = stack.copy();
-            if (index == 36) {
-                if (!this.moveItemStackTo(stack, 0, 36, false)) {
-                    return ItemStack.EMPTY;
+            if(stack.getItem() == Registration.COIN.get()) {
+                if(index == 36) {
+                    if(!moveItemStackTo(stack, 0, 36, false)) {
+                        return ItemStack.EMPTY;
+                    }
                 }
-                slot.onQuickCraft(stack, itemstack);
-            } else if (this.moveItemStackTo(stack, 36, 37, false)) {
-                return ItemStack.EMPTY;
-            } else if (index < 27) {
-                if (!this.moveItemStackTo(itemstack, 27, 36, false)) {
-                    return ItemStack.EMPTY;
+                else {
+                    if(!moveItemStackTo(stack, 36, 37, false)) {
+                        return ItemStack.EMPTY;
+                    }
                 }
-            } else if (index < 36) {
-                if (!this.moveItemStackTo(itemstack, 0, 27, false)) {
-                    return ItemStack.EMPTY;
-                }
-            }
-
-            if (stack.isEmpty()) {
-                slot.set(ItemStack.EMPTY);
-            } else {
-                slot.setChanged();
-            }
-
-            if (stack.getCount() == itemstack.getCount()) {
-                return ItemStack.EMPTY;
             }
 
             slot.onTake(playerIn, stack);
         }
 
-        return itemstack;
+        return itemStack;
     }
 }
